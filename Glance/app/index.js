@@ -32,13 +32,13 @@ startMonitors()
 
 // The updater is used to update the screen every 1 SECONDS 
 function updater() {
-  setTime() 
+  setTime()
   setDate()
   setBattery()
   startMonitors()
   addSecond()
 }
-setInterval(updater, 5000);
+setInterval(updater, 1000);
 
 // The fiveMinUpdater is used to update the screen every 5 MINUTES 
 function fiveMinUpdater() {
@@ -51,7 +51,7 @@ function setTime() {
   let hh = timeNow.getHours();  
   let mm = timeNow.getMinutes();
   let ss = timeNow.getSeconds();
-  if(!timeFormat) {
+  if(timeFormat) {
     let formatAMPM = (hh >= 12?'PM':'AM');
     hh = hh % 12 || 12;
 
@@ -59,11 +59,14 @@ function setTime() {
       hh = '0' + hh;
     } 
   }
-   if(mm < 10) {
+  if(mm < 10) {
       mm = '0' + mm;
-    } 
+    }
+  if (ss < 10) {
+      ss = '0' + ss;
+    }
   document.getElementById("time").text = (hh + ':' + mm);
-  
+  document.getElementById("seconds").text = (':' + ss);
 }
 
 function setDate() { 
@@ -88,21 +91,32 @@ function startMonitors() {
   
    let stepCount = (today.local.steps || 0)+"";
 
+   stepCount = (stepCount * .001);
+   stepCount = (Math.round(stepCount * 10) / 10);
+   stepCount += "k";
+  
+  /*
   if(stepCount >= 999 && stepCount <= 9999) {
-    stepCount = stepCount.substring(0, 1);
-    stepCount.trim();
-    stepCount += "k"
+    //stepCount = stepCount.substring(0, 1);
+    //stepCount.trim();
+    stepCount = (stepCount * .001);
+    stepCount = Math.round(stepCount);
+    stepCount += "k";
   } 
   if(stepCount >= 9999) {
-    stepCount = stepCount.substring(0, 2);
-    stepCount.trim();
-    stepCount += "k"
+    //stepCount = stepCount.substring(0, 2);
+    //stepCount.trim();
+    stepCount = (stepCount * .001);
+    stepCount = Math.round(stepCount);
+    stepCount += "k";
   }
+  */
+  
    document.getElementById("heart").text = JSON.stringify(data.heartRate);
-   document.getElementById("step").text = stepCount
+   document.getElementById("step").text = stepCount;
 }
 
-//minutes sense last pull 
+//minutes since last pull 
 function addSecond() {
   totalSeconds += 5;
   // document.getElementById("seconds").text = pad(totalSeconds % 60);

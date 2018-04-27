@@ -12,17 +12,18 @@
       <rect id="battery-level" x="7%" y="4%"/>
       <image class="image"x="7%" y="1%" href="img/battery.png" fill="white"/>
       
-      <text id="battery" class="status-text" x="$+5" y="10%"></text> 
-      <text id="date" class="status-text h3" x="7%" y="20%"></text> 
+      <text id="battery" class="status-text" x="$+5" y="9%"></text>
       
-      <text id="temp" class="h2 status-text" x="54%" y="17%" text-anchor="end">--</text>
-      <image class="image" x="55%" y="6%" href="img/degree.png" width="8" height="8" fill="white"/> 
+      <text id="date" class="status-text h2" x="4%" y="24%"></text> 
       
-      <image id="status-image" class="image" x="$+1" y="7%" href="img/refresh.png" pointer-events="visible" />      
+      <text id="temp" class="h2 status-text" x="47%" y="10%" text-anchor="end">--</text>
+      <image class="image" x="48%" y="4%" href="img/degree.png" width="8" height="8" fill="white"/> 
+      
+      <image id="status-image" class="image" x="56%" y="7%" href="img/refresh.png" pointer-events="visible" />      
 
-      <text id="delta" class="status-text" x="95%" y="10%" text-anchor="end">loading...</text>
-      <text id="bg" class="h1 status-text" x="95%" y="25%"  text-anchor="end" >---</text>
-      <text id="minutes" class="status-text" x="95%" y="32%"  text-anchor="end">0 mins</text>
+      <text id="delta" class="status-text" x="97%" y="10%" text-anchor="end">loading...</text>
+      <text id="bg" class="h1 status-text" x="97%" y="25%"  text-anchor="end" >---</text>
+      <text id="minutes" class="status-text" x="97%" y="32%"  text-anchor="end">0 mins</text>
 
      <!-- Direction line -->   
      <line id="direction" x1="80%" x2="90%" y1="44%" y2="44%" fill="white" stroke-width="2" />
@@ -33,18 +34,19 @@
   
       
        <!-- Graph -->
-      <text id="high" class="status-text" x="93%" y="65%+18"  text-anchor="end">200</text>
-      <text id="middle" class="status-text" x="93%" y="65%+53"  text-anchor="end">140</text>      
-      <text id="low" class="status-text" x="93%" y="65%+88"  text-anchor="end">70</text>
-      <use href="#graph" id="docGraph" x="60%-40" y="65%+14" width="125" height="70" />
+      <text id="high" class="status-text" x="99%" y="65%+18"  text-anchor="end">200</text>
+      <text id="middle" class="status-text" x="99%" y="65%+53"  text-anchor="end">140</text>      
+      <text id="low" class="status-text" x="99%" y="65%+88"  text-anchor="end">70</text>
+      <use href="#graph" id="docGraph" x="60%-50" y="65%+14" width="125" height="70" />
    
-      <text id="time" x="5%" y="65%" text-anchor="start">00:00</text>
+      <text id="time" x="72%" y="65%" text-anchor="end">00:00</text>
+      <text id="seconds" x="72.3%" y="64.7%" text-anchor="start">:00</text>
 
-     <image class="image" x="7%" y="75%" href="img/heart.png" />
-     <text id="heart" class="h2 status-text"  x="12%" y="97%" text-anchor="middle">--</text>
+     <image class="image" x="4%" y="75%" href="img/heart.png" />
+     <text id="heart" class="h2 status-text"  x="9%" y="97%" text-anchor="middle">--</text>
       
-     <image class="image" x="25%" y="75%" href="img/steps.png" />
-     <text id="step" class="h2 status-text"  x="30%" y="97%" text-anchor="middle">--</text>
+     <image class="image" x="22%" y="75%" href="img/steps.png" />
+     <text id="step" class="h2 status-text"  x="27%" y="97%" text-anchor="middle">--</text>
       
       <!-- Alert -->
       <svg id="popup" display="none" >

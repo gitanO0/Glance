@@ -19,11 +19,11 @@ function mySettings(props) {
         settingsKey="lowThreshold"
         />
         <Toggle
-          label="12hr | 24hr"
+          label="24hr | 12hr"
           settingsKey="timeFormat"
         />
         <Toggle
-          label="Celsius | Fahrenheit"
+          label="Fahrenheit | Celsius"
           settingsKey="tempType"
         />
         <TextInput

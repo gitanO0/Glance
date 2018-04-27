@@ -9,6 +9,12 @@
   font-size:140;
 }
 
+#seconds {
+  font-family: Tungsten-Medium;
+  fill: white;
+  font-size:45;
+}
+
 #battery {
   width:50;
   height:17;

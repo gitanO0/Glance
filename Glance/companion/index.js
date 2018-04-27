@@ -29,6 +29,7 @@ function queryOpenWeather() {
       });
   })
   .catch(function (err) {
+    console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
     console.log("Error fetching weather.You need an API key from openweathermap.org to view weather data. otherwise this error is fine to ignore. " + err);
   });
 }
@@ -184,25 +185,32 @@ function getSgvURL() {
 }
 
 function getWeatherApiKey() {
-  if(getSettings('owmAPI')){
-     return getSettings('owmAPI').name;
+  if(getSettings('owmAPI').name){
+    return (getSettings('owmAPI').name);
   } else {
-    return false;
+    return '5e3dd36238597b68d776add0e49a56ff';
   }
 }
 
 
 function getWeatherEndPoint() {
-  let city = ((getSettings("city")) ? getSettings("city").name : 'charlottesville');
+  if (getSettings('city').name){
+    return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();;
+  }  else {
+    return "https://api.openweathermap.org/data/2.5/weather?q=fort%20collins&units=" +  getTempType();;
+  }
+  
+  
+  //t city = ((getSettings("city")) ? getSettings("city").name : 'fort collins');
 
   return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();
 }
 
 function getTempType() {
    if(getSettings('tempType')){
-     return 'imperial'
+     return 'metric'
    } else {
-      return 'metric'
+      return 'imperial'
    }
 }
 
