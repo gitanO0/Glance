@@ -22,7 +22,8 @@ function queryOpenWeather() {
       .then(function(data) {
         // We just want the current temperature
         var weather = {
-          temperature: Math.round(data["main"]["temp"])
+          temperature: Math.round(data["main"]["temp"]),
+          humidity: data["main"]["humidity"]
         }
         // Send the weather data to the device
         return weather;
@@ -195,7 +196,7 @@ function getWeatherApiKey() {
 
 function getWeatherEndPoint() {
   if (getSettings('city').name){
-    return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();;
+    return "https://api.openweathermap.org/data/2.5/weather?q=" + getSettings('city').name + "&units=" +  getTempType();;
   }  else {
     return "https://api.openweathermap.org/data/2.5/weather?q=fort%20collins&units=" +  getTempType();;
   }
@@ -203,7 +204,7 @@ function getWeatherEndPoint() {
   
   //t city = ((getSettings("city")) ? getSettings("city").name : 'fort collins');
 
-  return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();
+  //return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();
 }
 
 function getTempType() {

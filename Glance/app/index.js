@@ -73,14 +73,17 @@ function setDate() {
   let dateObj = new Date();
   let month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
   let date = ('0' + dateObj.getDate()).slice(-2);
-  let year = dateObj.getFullYear();
+  let year = dateObj.getFullYear().toString().substr(-2);
   let shortDate = month + '/' + date  + '/' + year;
   document.getElementById("date").text = shortDate;
+  
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'];
+  document.getElementById("day").text = days[dateObj.getDay()];
 }
 
 function setBattery() {
   document.getElementById("battery").text = (Math.floor(battery.chargeLevel) + "%");
-  document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
+  //document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
 }
 
 function startMonitors() {  
@@ -118,12 +121,12 @@ function startMonitors() {
 
 //minutes since last pull 
 function addSecond() {
-  totalSeconds += 5;
+  totalSeconds += 1;
   // document.getElementById("seconds").text = pad(totalSeconds % 60);
   document.getElementById("minutes").text = parseInt(totalSeconds / 60) + ' mins';
 }
 
-function setArrowDirection(delta) {
+/* function setArrowDirection(delta) {
   let direction = document.getElementById("direction")
   let directionDot =  document.getElementById("direction-dot")
   
@@ -175,7 +178,7 @@ function setDirection(x1, x2, y1, y2, cx, cy, direction, directionDot) {
     
     directionDot.cx =  cx * appWidth;
     directionDot.cy = cy * appHeight;
-}
+} */
 
 // converts a mg/dL to mmoL
 function mmol( bg ) {
@@ -215,13 +218,14 @@ function processWeatherData(data) {
   console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
     document.getElementById("temp").text = data.temperature
+    document.getElementById("hum").text = "h" + data.humidity + "%"
   }
 }
 
 // Display the  data received from the companion
 function processOneBg(data) {
   console.log("bg is: " + JSON.stringify(data));
-  setArrowDirection(data.delta)
+  //setArrowDirection(data.delta)
   // Temp fix for Spike endpoint 
   // Next pull does not get caculated right
    if(data.nextPull === null) {
@@ -283,8 +287,9 @@ inbox.onnewfile = () => {
       if( sgv >=  data.settings.highThreshold) {
         if((data.BGD[count].delta > 0)){
           console.log('BG HIGH') 
-          startVibration("nudge", 3000, sgv)
-          document.getElementById("bg").style.fill="#e2574c"
+          //startVibration("nudge", 3000, sgv)
+          document.getElementById("bg").style.fill = "#e2574c"
+          //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
         } else {
           console.log('BG still HIGH, But you are going down') 
           showAlertModal = true;
@@ -294,9 +299,9 @@ inbox.onnewfile = () => {
       if(sgv <=  data.settings.lowThreshold) {
          if((data.BGD[count].delta < 0)){
             console.log('BG LOW') 
-           
             startVibration("nudge", 3000, sgv)
             document.getElementById("bg").style.fill="#e2574c"
+            //document.getElementById("bgColor").style.gradient-color1="#58130e"
            } else {
           console.log('BG still LOW, But you are going UP') 
           showAlertModal = true;
