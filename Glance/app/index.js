@@ -88,12 +88,12 @@ function setDate() {
 }
 
 function setBattery() {
-  if (battery.chargeLevel <= 30){
+  if (battery.chargeLevel < 30){
      document.getElementById("battery").style.fill = "#ff9980"
   } else if (battery.chargeLevel >= 80) {
-     document.getElementById("battery").style.fill = "#c2f0c2"
+     document.getElementById("battery").style.fill = "#4dff4d"
   } else {
-    document.getElementById("battery").style.fill = "white"
+    document.getElementById("battery").style.fill = "#b3b3b3"
   }
   document.getElementById("battery").text = (Math.floor(battery.chargeLevel) + "%");
   //document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
@@ -232,7 +232,13 @@ function processWeatherData(data) {
   if(data) {
     document.getElementById("temp").text = data.temperature
     document.getElementById("hum").text = "h" + data.humidity + "%"
-    document.getElementById("clouds").text = data.clouds + "% clouds"
+    document.getElementById("clouds").text = data.clouds
+    
+    //set minutes since last weather station update
+    var wxDate = new Date(data.wxTime);
+    var curDate = (new Date().getTime() / 1000);
+    var diff = (curDate - wxDate);
+    document.getElementById("wxTime").text = "+" + Math.round(diff / 60) + "m";
   }
 }
 
@@ -302,28 +308,28 @@ inbox.onnewfile = () => {
         if((data.BGD[count].delta > 0)){
           console.log('BG HIGH') 
           //startVibration("nudge", 3000, sgv)
-          document.getElementById("bg").style.fill = "#e2574c"
+          document.getElementById("bg").style.fill = "orange"
           //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
         } else {
           console.log('BG still HIGH, But you are going down') 
           showAlertModal = true;
         }
       } else {
-        document.getElementById("bg").style.fill="white"
+        document.getElementById("bg").style.fill="#4d94ff"
       }
       
       if(sgv <=  data.settings.lowThreshold) {
          if((data.BGD[count].delta < 0)){
             console.log('BG LOW') 
             startVibration("nudge", 3000, sgv)
-            document.getElementById("bg").style.fill="#e2574c"
+            document.getElementById("bg").style.fill="red"
             //document.getElementById("bgColor").style.gradient-color1="#58130e"
            } else {
           console.log('BG still LOW, But you are going UP') 
           showAlertModal = true;
         }
       } else {
-        document.getElementById("bg").style.fill="white"
+        document.getElementById("bg").style.fill="#4d94ff"
       }
       //End High || Low alert      
     
@@ -363,7 +369,7 @@ inbox.onnewfile = () => {
         data.BGD[CONST_COUNT].sgv = mgdl(data.BGD[CONST_COUNT].sgv)
       }
       
-      
+      myGraph.setLowHigh(data.settings.lowThreshold, data.settings.highThreshold);
       // Set the graph scale
       myGraph.setYRange(ymin, ymax);
       // Update the graph

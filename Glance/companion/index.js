@@ -24,7 +24,9 @@ function queryOpenWeather() {
         var weather = {
           temperature: Math.round(data["main"]["temp"]),
           humidity: data["main"]["humidity"],
-          clouds: data["clouds"]["all"]
+          //clouds: data["clouds"]["all"]
+          clouds: data["weather"][0].main,
+          wxTime: data["dt"]
         }
         // Send the weather data to the device
         console.log(weather);

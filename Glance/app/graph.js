@@ -20,9 +20,9 @@ export default class Graph {
       
    this._vals = this._id.getElementsByClassName("gval");
    
-   this._tHigh = 162;
-   this._tLow = 72;
-   
+   this._tHigh = 170;
+   this._tLow = 70;
+ 
    this._tHighLine = this._id.getElementById("tHigh");
    this._tLowLine = this._id.getElementById("tLow");
    
@@ -34,6 +34,11 @@ export default class Graph {
  setPosition(x,y){   
    this._id.x = x;
    this._id.y = y;
+ }
+  
+ setLowHigh(low,high){
+   this._tLow = low;
+   this._tHigh = high;
  }
   
  setSize(w,h){
@@ -97,6 +102,11 @@ export default class Graph {
      //this._vals[index].cy = this._height - 20;
      //this._vals[index].r = this._pointsize;
      
+     if (v[index].sgv > this._tHigh) {
+       this._vals[index].style.fill = "orange";
+     } else if (v[index].sgv < this._tLow) {
+       this._vals[index].style.fill = "red";
+     }    
    }
    
    
