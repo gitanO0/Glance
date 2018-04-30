@@ -23,9 +23,11 @@ function queryOpenWeather() {
         // We just want the current temperature
         var weather = {
           temperature: Math.round(data["main"]["temp"]),
-          humidity: data["main"]["humidity"]
+          humidity: data["main"]["humidity"],
+          clouds: data["clouds"]["all"]
         }
         // Send the weather data to the device
+        console.log(weather);
         return weather;
       });
   })

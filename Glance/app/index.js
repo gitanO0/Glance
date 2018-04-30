@@ -66,7 +66,13 @@ function setTime() {
       ss = '0' + ss;
     }
   document.getElementById("time").text = (hh + ':' + mm);
-  document.getElementById("seconds").text = (':' + ss);
+  
+  if (ss % 2 == 0) {
+    document.getElementById("secscolon").style.visibility = "visible";
+  } else {
+    document.getElementById("secscolon").style.visibility = "hidden";
+  }
+  document.getElementById("seconds").text = (ss);
 }
 
 function setDate() { 
@@ -82,6 +88,13 @@ function setDate() {
 }
 
 function setBattery() {
+  if (battery.chargeLevel <= 30){
+     document.getElementById("battery").style.fill = "#ff9980"
+  } else if (battery.chargeLevel >= 80) {
+     document.getElementById("battery").style.fill = "#c2f0c2"
+  } else {
+    document.getElementById("battery").style.fill = "white"
+  }
   document.getElementById("battery").text = (Math.floor(battery.chargeLevel) + "%");
   //document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
 }
@@ -219,6 +232,7 @@ function processWeatherData(data) {
   if(data) {
     document.getElementById("temp").text = data.temperature
     document.getElementById("hum").text = "h" + data.humidity + "%"
+    document.getElementById("clouds").text = data.clouds + "% clouds"
   }
 }
 
@@ -273,7 +287,7 @@ inbox.onnewfile = () => {
       const CONST_COUNT = data.BGD.length - 1;
       let count = CONST_COUNT;
       
-      document.getElementById("bg").style.fill="white"
+      //document.getElementById("bg").style.fill="white"
       
       // High || Low alert  
       
@@ -294,6 +308,8 @@ inbox.onnewfile = () => {
           console.log('BG still HIGH, But you are going down') 
           showAlertModal = true;
         }
+      } else {
+        document.getElementById("bg").style.fill="white"
       }
       
       if(sgv <=  data.settings.lowThreshold) {
@@ -306,6 +322,8 @@ inbox.onnewfile = () => {
           console.log('BG still LOW, But you are going UP') 
           showAlertModal = true;
         }
+      } else {
+        document.getElementById("bg").style.fill="white"
       }
       //End High || Low alert      
     

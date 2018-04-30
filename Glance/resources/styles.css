@@ -15,6 +15,12 @@
   font-size:90;
 }
 
+#secscolon {
+  font-family: Tungsten-Medium;
+  fill: white;
+  font-size:90;
+}
+
 #battery {
   width:50;
   height:17;
@@ -23,6 +29,26 @@
  width:30; 
  height:16; 
  fill:white;
+}
+#date {
+  fill: white;
+  text-length: 65;
+  font-family: SevilleSharp;
+  font-size:35;
+}
+
+#day {
+  fill: white;
+  text-length: 65;
+  font-family: SevilleSharp;
+  font-size:35;
+}
+
+.weather-text {
+  fill: #33ffbb;
+  text-length: 100;
+  font-family: SevilleSharp-Bold;
+  font-size:25;
 }
 
 .status-text {
