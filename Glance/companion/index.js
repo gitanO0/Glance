@@ -25,7 +25,9 @@ function queryOpenWeather() {
           temperature: Math.round(data["main"]["temp"]),
           humidity: data["main"]["humidity"],
           //clouds: data["clouds"]["all"]
-          clouds: data["weather"][0].main,
+          weatherDesc: data["weather"][0].description,
+          clouds: data["clouds"]["all"],
+          windspeed: data["wind"]["speed"],
           wxTime: data["dt"]
         }
         // Send the weather data to the device
@@ -116,15 +118,13 @@ function formatReturnData() {
     
     if(getSettings("highThreshold")){
       highThreshold = getSettings("highThreshold").name
-    }
-    if(getSettings("highThreshold").name == ""){
-      highThreshold = 200
+    } else {
+      highThreshold = 165
     }
   
     if(getSettings("lowThreshold")){
      lowThreshold = getSettings("lowThreshold").name
-    }
-    if(getSettings("lowThreshold").name == ""){
+    } else {
      lowThreshold = 70
     }
       

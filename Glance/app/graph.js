@@ -105,8 +105,11 @@ export default class Graph {
      if (v[index].sgv > this._tHigh) {
        this._vals[index].style.fill = "orange";
      } else if (v[index].sgv < this._tLow) {
-       this._vals[index].style.fill = "red";
+       this._vals[index].style.fill = "#cc0000";
      }    
+     else {
+       this._vals[index].style.fill = "#4d94ff";
+     }
    }
    
    

@@ -7,8 +7,10 @@ import { inbox } from "file-transfer";
 import fs from "fs";
 import * as fs from "fs";
 import { vibration } from "haptics";
+import clock from "clock";
 
-import Graph from "graph.js"
+import Graph from "graph.js";
+
 
 let heartRate = new HeartRateSensor();
 let totalSeconds = 0;
@@ -38,7 +40,7 @@ function updater() {
   startMonitors()
   addSecond()
 }
-setInterval(updater, 1000);
+setInterval(updater, 5000);
 
 // The fiveMinUpdater is used to update the screen every 5 MINUTES 
 function fiveMinUpdater() {
@@ -47,32 +49,20 @@ function fiveMinUpdater() {
 }
 
 function setTime() {
-  let timeNow = new Date();
-  let hh = timeNow.getHours();  
-  let mm = timeNow.getMinutes();
-  let ss = timeNow.getSeconds();
-  if(timeFormat) {
-    let formatAMPM = (hh >= 12?'PM':'AM');
-    hh = hh % 12 || 12;
-
-    if(hh < 10) {
-      hh = '0' + hh;
-    } 
-  }
-  if(mm < 10) {
-      mm = '0' + mm;
+  clock.granularity = "seconds";
+  clock.ontick = function(evt) {
+    document.getElementById("hours").text = (monoDigits("0" + evt.date.getHours()).slice(-2));
+    document.getElementById("minutes").text = (monoDigits("0" + evt.date.getMinutes()).slice(-2));
+    document.getElementById("seconds").text = (monoDigits("0" + evt.date.getSeconds()).slice(-2));   
+    
+    if ((evt.date.getSeconds() % 2) == 0) {
+      document.getElementById("colon1").style.visibility = "visible";
+      document.getElementById("colon2").style.visibility = "visible";
+    } else {
+      document.getElementById("colon1").style.visibility = "hidden";
+      document.getElementById("colon2").style.visibility = "hidden";
     }
-  if (ss < 10) {
-      ss = '0' + ss;
-    }
-  document.getElementById("time").text = (hh + ':' + mm);
-  
-  if (ss % 2 == 0) {
-    document.getElementById("secscolon").style.visibility = "visible";
-  } else {
-    document.getElementById("secscolon").style.visibility = "hidden";
-  }
-  document.getElementById("seconds").text = (ss);
+  };
 }
 
 function setDate() { 
@@ -111,23 +101,6 @@ function startMonitors() {
    stepCount = (Math.round(stepCount * 10) / 10);
    stepCount += "k";
   
-  /*
-  if(stepCount >= 999 && stepCount <= 9999) {
-    //stepCount = stepCount.substring(0, 1);
-    //stepCount.trim();
-    stepCount = (stepCount * .001);
-    stepCount = Math.round(stepCount);
-    stepCount += "k";
-  } 
-  if(stepCount >= 9999) {
-    //stepCount = stepCount.substring(0, 2);
-    //stepCount.trim();
-    stepCount = (stepCount * .001);
-    stepCount = Math.round(stepCount);
-    stepCount += "k";
-  }
-  */
-  
    document.getElementById("heart").text = JSON.stringify(data.heartRate);
    document.getElementById("step").text = stepCount;
 }
@@ -136,62 +109,8 @@ function startMonitors() {
 function addSecond() {
   totalSeconds += 1;
   // document.getElementById("seconds").text = pad(totalSeconds % 60);
-  document.getElementById("minutes").text = parseInt(totalSeconds / 60) + ' mins';
+  document.getElementById("bgMinutes").text = parseInt(totalSeconds / 60) + ' mins';
 }
-
-/* function setArrowDirection(delta) {
-  let direction = document.getElementById("direction")
-  let directionDot =  document.getElementById("direction-dot")
-  
-  let directionTwo = document.getElementById("direction-two")
-  let directionTwoDot =  document.getElementById("direction-two-dot")
-  // TODO find a better way to handle doulbe and single arrows
-  if(delta <= 4 || delta >= -4){
-    setDirection(.8, .9, .44, .44, .9, .44, direction, directionDot)
-    setDirection(.8, .9, .44, .44, .9, .44, directionTwo, directionTwoDot)
-  } 
- 
-  if(delta > 5) {
-    setDirection(.89, .81, .39, .52, .89, .39, direction, directionDot)
-    setDirection(.89, .81, .39, .52, .89, .39, directionTwo, directionTwoDot)
-  }
-  if(delta >= 7) {
-    setDirection(.85, .85, .38, .51, .85, .38, direction, directionDot)
-    setDirection(.85, .85, .38, .51, .85, .38,  directionTwo, directionTwoDot)
-  }
-  if(delta >= 10) {
-    setDirection(.82, .82, .38, .51, .82, .38, direction, directionDot)
-    setDirection(.90, .90, .38, .51, .90, .38, directionTwo, directionTwoDot)
-  }
-  
-  if(delta < -5) {
-    setDirection(.89, .81, .52, .39, .89, .52, direction, directionDot)
-    setDirection(.89, .81, .52, .39, .89, .52, directionTwo, directionTwoDot)
-  }
-  if(delta <= -7) {
-   setDirection(.85, .85, .38, .51, .85, .51, direction, directionDot)
-   setDirection(.85, .85, .38, .51, .85, .51, directionTwo, directionTwoDot)
-  }
-  if(delta <= -10) {
-    setDirection(.82, .82, .38, .51, .82, .51, direction, directionDot)
-    setDirection(.90, .90, .38, .51, .90, .51, directionTwo, directionTwoDot)
-  }
-}
-
-//Takes in  % of device you want to take in and the direction lines x1 x2 y1 y2 as well as thedirection dots cx cy
-function setDirection(x1, x2, y1, y2, cx, cy, direction, directionDot) {
-    let appWidth =  document.getElementById("app").width
-    let appHeight =  document.getElementById("app").height
-
-    direction.x1 = x1 * appWidth;
-    direction.x2 = x2 * appWidth;
-   
-    direction.y1 =  y1 * appHeight;
-    direction.y2 = y2 * appHeight;
-    
-    directionDot.cx =  cx * appWidth;
-    directionDot.cy = cy * appHeight;
-} */
 
 // converts a mg/dL to mmoL
 function mmol( bg ) {
@@ -232,7 +151,9 @@ function processWeatherData(data) {
   if(data) {
     document.getElementById("temp").text = data.temperature
     document.getElementById("hum").text = "h" + data.humidity + "%"
-    document.getElementById("clouds").text = data.clouds
+    document.getElementById("weatherDesc").text = data.weatherDesc
+    document.getElementById("clouds").text = data.clouds + "% clouds"
+    document.getElementById("windspeed").text = Math.round(data.windspeed) + "mph"
     
     //set minutes since last weather station update
     var wxDate = new Date(data.wxTime);
@@ -305,24 +226,21 @@ inbox.onnewfile = () => {
       
       
       if( sgv >=  data.settings.highThreshold) {
+        document.getElementById("bg").style.fill = "orange"
         if((data.BGD[count].delta > 0)){
           console.log('BG HIGH') 
           //startVibration("nudge", 3000, sgv)
-          document.getElementById("bg").style.fill = "orange"
           //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
         } else {
           console.log('BG still HIGH, But you are going down') 
           showAlertModal = true;
         }
-      } else {
-        document.getElementById("bg").style.fill="#4d94ff"
       }
-      
-      if(sgv <=  data.settings.lowThreshold) {
+      else if(sgv <=  data.settings.lowThreshold) {
+        document.getElementById("bg").style.fill="#cc0000"
          if((data.BGD[count].delta < 0)){
             console.log('BG LOW') 
             startVibration("nudge", 3000, sgv)
-            document.getElementById("bg").style.fill="red"
             //document.getElementById("bgColor").style.gradient-color1="#58130e"
            } else {
           console.log('BG still LOW, But you are going UP') 
@@ -380,37 +298,6 @@ inbox.onnewfile = () => {
   } while (fileName);
 };
 
-
-//----------------------------------------------------------
-//
-// Plotting the graph
-//
-//----------------------------------------------------------
-// let appHeight =  document.getElementById("app").height;
-// //let graphPoints = document.getElementsByClassName('graph-point'); 
-// let bgArray = []
-// // Takes in a bg, dom element
-// function plotPoint(bloodSugar , domElement, highThreshold) {  
-//   domElement.cy = (.85 - Math.pow(0.05, 2)*(bloodSugar - 90)) * appHeight;
-  
-//   //TODO this should set the color of the graph 
-//   if(bloodSugar > highThreshold ) {
-//     console.log('Hight' + JSON.stringify(domElement))
-//     domElement.style.fill = 'red'
-//   }
-// }
-
-// function returnPoint(bloodSugar) {
-//   return (.85 - Math.pow(0.05, 2)*(bloodSugar - 90)) * appHeight;
-// }
-
-// // Listen for the onerror event
-// messaging.peerSocket.onerror = function(err) {
-//   // Handle any errors
-//   console.log("Connection error: " + err.code + " - " + err.message);
-// }
-
-
 //----------------------------------------------------------
 //
 // Settings
@@ -425,14 +312,6 @@ function settings(settings, unitsHint){
     highThreshold = mgdl( settings.highThreshold )
     lowThreshold = mgdl( settings.lowThreshold )
   }
-  //   //document.getElementById("high").y = returnPoint(highThreshold)
-  //   document.getElementById("high").text = settings.highThreshold
-
-  //   //document.getElementById("middle").y = (returnPoint(highThreshold) + returnPoint(lowThreshold)) / 2
-  //   document.getElementById("middle").text = ( parseInt(settings.highThreshold) + parseInt(settings.lowThreshold ))/2
-
-  //   //document.getElementById("low").y =  returnPoint(lowThreshold)
-  //   document.getElementById("low").text = settings.lowThreshold
 }
 
 
@@ -501,6 +380,7 @@ btnRight.onclick = function(evt) {
 //----------------------------------------------------------
 
 document.getElementById("status-image").onclick = (e) => {
+  vibration.start("bump");
   fiveMinUpdater()
 }
  
@@ -508,4 +388,23 @@ document.getElementById("status-image").onclick = (e) => {
 //   stopVibration()
 // }
 
+// Convert a number to a special monospace number
+function monoDigits(digits) {
+  var ret = "";
+  var str = digits.toString();
+  for (var index = 0; index < str.length; index++) {
+    var num = str.charAt(index);
+    ret = ret.concat(hex2a("0x1" + num));
+  }
+  return ret;
+}
 
+// Hex to string
+function hex2a(hex) {
+  var str = '';
+  for (var index = 0; index < hex.length; index += 2) {
+    var val = parseInt(hex.substr(index, 2), 16);
+    if (val) str += String.fromCharCode(val);
+  }
+  return str.toString();
+}
