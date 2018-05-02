@@ -17,13 +17,15 @@
       <text id="day" x="1%" y="47%"></text> 
       <text id="date" x="32%" y="47%"></text> 
       
-      <text id="temp" class="weather-text" x="34%" y="8%" text-anchor="end">--</text>
-      <image class="image" x="35.5%" y="2%" href="img/degree.png" width="8" height="8" fill="#66d9ff"/> 
+      <text id="temp" class="weather-text" x="32%" y="8%" text-anchor="end">--</text>
+      <image class="image" x="33.5%" y="2%" href="img/degree.png" width="8" height="8" fill="#66d9ff"/> 
       <text id="hum" class="weather-text" x="65%" y="8%" text-anchor="end">--</text>
-      <text id="clouds" class="weather-text" x="72%" y="17.5%" text-anchor="end">--</text>
-      <text id="windspeed" class="weather-text" x="26%" y="17.5%" text-anchor="end">--</text>
-      <text id="weatherDesc" class="weather-text" x="72%" y="27%" text-anchor="end">--</text>
-      <text id="wxTime" class="weather-text" x="72%" y="36%" text-anchor="end">--</text> 
+      <text id="clouds" class="weather-text" x="71%" y="17.5%" text-anchor="end">--</text>
+      <text id="windspeed" class="weather-text" x="2%" y="17.5%" text-anchor="start">--</text>
+      <text id="windDir" class="weather-text" x="2%" y="27%" text-anchor="start">--</text>
+      
+      <text id="weatherDesc" class="weather-text" x="71%" y="27%" text-anchor="end">--</text>
+      <text id="wxTime" class="weather-text" x="71%" y="36%" text-anchor="end">--</text> 
 
       <text id="delta" class="status-text h2" x="99%" y="7%" text-anchor="end">loading...</text>
       <text id="bg" class="h1 status-text" x="99%" y="20.5%"  text-anchor="end" >---</text>
@@ -40,8 +42,6 @@
       <text id="minutes" x="70%" y="69%" text-anchor="end">00</text>
       <text id="colon2" x="75.5%" y="62%" text-anchor="end">:</text>
       <text id="seconds" x="96%" y="63%" text-anchor="end">00</text>
-      <!-- <text id="secscolon" x="72%" y="61%" text-anchor="start">:</text>
-      <text id="seconds" x="78%" y="62%" text-anchor="start">00</text> -->
 
      <image class="image" x="2%" y="78%" href="img/heart.png" fill="#ffc2b3"/>
      <text id="heart" class="h2 status-text"  x="7%" y="97%" text-anchor="middle" fill='#ffc2b3'>--</text>
@@ -49,7 +49,7 @@
      <image class="image" x="18%" y="78%" href="img/steps.png" fill='#ffffb3'/>
      <text id="step" class="h2 status-text"  x="25%" y="97%" text-anchor="middle" fill='#ffffb3'>--</text>
       
-     <image id="status-image" class="image" x="85%" y="33%" href="img/refresh.png" pointer-events="visible" width="32" />
+     <image id="status-image" class="image" x="85%" y="33%" href="img/refresh.png" pointer-events="visible" width="32"/>
       
       <!-- Alert -->
       <svg id="popup" display="none" >

@@ -28,6 +28,7 @@ function queryOpenWeather() {
           weatherDesc: data["weather"][0].description,
           clouds: data["clouds"]["all"],
           windspeed: data["wind"]["speed"],
+          winddir: data["wind"]["deg"],
           wxTime: data["dt"]
         }
         // Send the weather data to the device
