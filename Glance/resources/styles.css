@@ -62,8 +62,8 @@
 
 .weather-text {
   text-length: 100;
-  font-family: SevilleSharp-Bold;
-  font-size:25;
+  font-family: SevilleSharp;
+  font-size:27;
 }
 .windDir-text {
   font-size:28;

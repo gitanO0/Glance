@@ -25,7 +25,7 @@
       
       <text id="clouds" class="weather-text weather-color" x="70%" y="27%" text-anchor="end">--</text>
       <text id="windspeed" class="weather-text weather-color" x="2%" y="27%" text-anchor="start">--</text>
-      <text id="windDir" class="weather-text weather-color windDir-text" x="2%" y="34%" text-anchor="start">--</text>
+      <text id="windDir" class="weather-text weather-color windDir-text" x="2%" y="35%" text-anchor="start">--</text>
       
       <text id="wxTime" class="weather-text weather-color" x="70%" y="36%" text-anchor="end">--</text> 
 

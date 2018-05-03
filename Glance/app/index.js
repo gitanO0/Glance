@@ -149,15 +149,41 @@ function fetchCompaionData(cmd) {
 function processWeatherData(data) {
   console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
-    document.getElementById("temp").text = data.temperature
-    document.getElementById("hum").text = "h" + data.humidity + "%"
-    document.getElementById("weatherDesc").text = data.weatherDesc
+    document.getElementById("temp").text = data.temperature;
+    
+    if (data.humidity < 10) {
+      document.getElementById("hum").style.fontWeight = "bold";
+    } else {
+      document.getElementById("hum").style.fontWeight = "normal";
+    }
+    document.getElementById("hum").text = "h" + data.humidity + "%";
+    
+    if (document.getElementById("weatherDesc").length > 19) {
+          document.getElementById("weatherDesc").style.fontSize = 20;
+    } else {
+      document.getElementById("weatherDesc").style.fontSize = 25;
+    }
+    document.getElementById("weatherDesc").text = data.weatherDesc;
+    
+    if (data.windspeed > 19) {
+      document.getElementById("windspeed").style.fontWeight = "bold";
+    } else {
+      document.getElementById("windspeed").style.fontWeight = "normal";
+    }
     document.getElementById("windspeed").text = Math.round(data.windspeed) + "mph ";
-    document.getElementById("clouds").text = data.clouds + "% cldy"
+    
+    document.getElementById("clouds").text = data.clouds + "% cldy";
     var wxDate = new Date(data.wxTime);
     var curDate = (new Date().getTime() / 1000);
     var diff = (curDate - wxDate);
-    document.getElementById("wxTime").text = "+" + Math.round(diff / 60) + "m";
+    var lastUpdatedMinutes = Math.round(diff / 60)
+    
+    if (lastUpdatedMinutes > 44) {
+      document.getElementById("wxTime").style.fontWeight = "bold";
+    } else {
+      document.getElementById("wxTime").style.fontWeight = "normal";
+    }
+    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes + "m";
     
     var dir = 0;
     if (data.winddir > 348.75 || data.winddir < 11.25) {
@@ -502,4 +528,8 @@ function hex2a(hex) {
     if (val) str += String.fromCharCode(val);
   }
   return str.toString();
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
