@@ -73,7 +73,7 @@ function setDate() {
   let shortDate = month + '/' + date  + '/' + year;
   document.getElementById("date").text = shortDate;
   
-  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'];
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   document.getElementById("day").text = days[dateObj.getDay()];
 }
 
@@ -210,6 +210,51 @@ function processWeatherData(data) {
              } 
     else {dir = "---"}
     document.getElementById("windDir").text = dir;
+    
+    if (data.temperature < "32") {
+      var cold = "#99bbff";
+      document.getElementById("temp").style.fill = cold;
+      document.getElementById("hum").style.fill = cold;
+      document.getElementById("weatherDesc").style.fill = cold;
+      document.getElementById("windspeed").style.fill = cold;
+      document.getElementById("clouds").style.fill = cold;
+      document.getElementById("wxTime").style.fill = cold;
+      document.getElementById("windDir").style.fill = cold;
+      document.getElementById("degree").style.fill = cold;
+    }
+    else if (data.temperature < "65") {
+      var cool = "#adebeb";
+      document.getElementById("temp").style.fill = cool;
+      document.getElementById("hum").style.fill = cool;
+      document.getElementById("weatherDesc").style.fill = cool;
+      document.getElementById("windspeed").style.fill = cool;
+      document.getElementById("clouds").style.fill = cool;
+      document.getElementById("wxTime").style.fill = cool;
+      document.getElementById("windDir").style.fill = cool;
+      document.getElementById("degree").style.fill = cool;
+    }
+    else if (data.temperature < "85") {
+      var warm = "#99ff99";
+      document.getElementById("temp").style.fill = warm;
+      document.getElementById("hum").style.fill = warm;
+      document.getElementById("weatherDesc").style.fill = warm;
+      document.getElementById("windspeed").style.fill = warm;
+      document.getElementById("clouds").style.fill = warm;
+      document.getElementById("wxTime").style.fill = warm;
+      document.getElementById("windDir").style.fill = warm;
+      document.getElementById("degree").style.fill = warm;
+    }
+    else {
+      var hot = "#ffb399";
+      document.getElementById("temp").style.fill = hot;
+      document.getElementById("hum").style.fill = hot;
+      document.getElementById("weatherDesc").style.fill = hot;
+      document.getElementById("windspeed").style.fill = hot;
+      document.getElementById("clouds").style.fill = hot;
+      document.getElementById("wxTime").style.fill = hot;
+      document.getElementById("windDir").style.fill = hot;
+      document.getElementById("degree").style.fill = hot;
+    }
   }
 }
 

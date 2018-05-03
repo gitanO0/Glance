@@ -61,10 +61,16 @@
 }
 
 .weather-text {
-  fill: #66d9ff;
   text-length: 100;
   font-family: SevilleSharp-Bold;
   font-size:25;
+}
+.windDir-text {
+  font-size:28;
+}
+
+.weather-color {
+  fill: #b3ffb3;
 }
 
 .status-text {
@@ -101,4 +107,12 @@
 
 .gval {
   fill:#4d94ff;
+}
+
+.heart-color {
+  fill: #ffc2b3;
+}
+
+.step-color {
+  fill: #ffffb3;
 }
