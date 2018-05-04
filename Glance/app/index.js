@@ -193,52 +193,52 @@ function processWeatherData(data) {
     }
     
     var dir = 0;
-    if (data.winddir > 348.75 || data.winddir < 11.25) {
+    if (data.winddir > 348.75 && data.winddir < 11.25) {
           dir = "n"
         }
-    else if (data.winddir > 326.25 || data.winddir < 348.75) {
+    else if (data.winddir > 326.25 && data.winddir < 348.75) {
                dir = "nnw"
              }
-    else if (data.winddir > 303.75 || data.winddir < 326.25) {
+    else if (data.winddir > 303.75 && data.winddir < 326.25) {
                dir = "nw"
              }
-    else if (data.winddir > 281.25 || data.winddir < 303.75) {
+    else if (data.winddir > 281.25 && data.winddir < 303.75) {
                dir = "wnw"
              }
-    else if (data.winddir > 258.75 || data.winddir < 281.25) {
+    else if (data.winddir > 258.75 && data.winddir < 281.25) {
                dir = "w"
              }  
-    else if (data.winddir > 236.25 || data.winddir < 258.75) {
+    else if (data.winddir > 236.25 && data.winddir < 258.75) {
                dir = "wsw"
              }      
-    else if (data.winddir > 213.75 || data.winddir < 236.25) {
+    else if (data.winddir > 213.75 && data.winddir < 236.25) {
                dir = "sw"
              }       
-    else if (data.winddir > 191.25 || data.winddir < 213.75) {
+    else if (data.winddir > 191.25 && data.winddir < 213.75) {
                dir = "ssw"
              }     
-    else if (data.winddir > 168.75 || data.winddir < 191.25) {
+    else if (data.winddir > 168.75 && data.winddir < 191.25) {
                dir = "s"
              }      
-    else if (data.winddir > 146.25 || data.winddir < 168.75) {
+    else if (data.winddir > 146.25 && data.winddir < 168.75) {
                dir = "sse"
              }      
-    else if (data.winddir > 123.75 || data.winddir < 146.25) {
+    else if (data.winddir > 123.75 && data.winddir < 146.25) {
                dir = "se"
              }  
-    else if (data.winddir > 101.25 || data.winddir < 123.75) {
+    else if (data.winddir > 101.25 && data.winddir < 123.75) {
                dir = "ese"
              }       
-    else if (data.winddir > 78.75 || data.winddir < 101.25) {
+    else if (data.winddir > 78.75 && data.winddir < 101.25) {
                dir = "e"
              }      
-    else if (data.winddir > 56.25 || data.winddir < 78.75) {
+    else if (data.winddir > 56.25 && data.winddir < 78.75) {
                dir = "ene"
              }      
-    else if (data.winddir > 33.75 || data.winddir < 56.25) {
+    else if (data.winddir > 33.75 && data.winddir < 56.25) {
                dir = "ne"
              }   
-    else if (data.winddir > 11.25 || data.winddir < 33.75) {
+    else if (data.winddir > 11.25 && data.winddir < 33.75) {
                dir = "nne"
              } 
     else {dir = "---"}

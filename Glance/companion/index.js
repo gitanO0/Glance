@@ -194,9 +194,9 @@ function getSgvURL() {
 function getWeatherApiKey() {
   if(getSettings('owmAPI').name){
     return (getSettings('owmAPI').name);
-  } else {
+  } /*else {
     return '5e3dd36238597b68d776add0e49a56ff';
-  }
+  }*/
 }
 
 
