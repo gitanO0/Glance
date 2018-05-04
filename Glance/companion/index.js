@@ -8,7 +8,8 @@ import { geolocation } from "geolocation";
 
 
 // // default URL pointing at xDrip Plus endpoint
- var URL = null;
+var URL = null;
+var weatherURL = null;
 //WeatheyAPI connection
 var API_KEY = null;
 var ENDPOINT = null
@@ -16,15 +17,15 @@ var ENDPOINT = null
 
 // Fetch the weather from OpenWeather
 function queryOpenWeather() {
-  return fetch(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey())
+  let weatherURL = getWeatherEndPoint() + "&APPID=" + getWeatherApiKey();
+  console.log(weatherURL);
+  return fetch(weatherURL)
   .then(function (response) {
      return response.json()
       .then(function(data) {
-        // We just want the current temperature
         var weather = {
           temperature: Math.round(data["main"]["temp"]),
           humidity: data["main"]["humidity"],
-          //clouds: data["clouds"]["all"]
           weatherDesc: data["weather"][0].description,
           clouds: data["clouds"]["all"],
           windspeed: data["wind"]["speed"],
@@ -32,7 +33,7 @@ function queryOpenWeather() {
           wxTime: data["dt"]
         }
         // Send the weather data to the device
-        console.log(weather);
+        console.log(data["dt"]);
         return weather;
       });
   })

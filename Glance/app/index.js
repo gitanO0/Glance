@@ -32,7 +32,7 @@ setDate()
 setBattery()
 startMonitors() 
 
-// The updater is used to update the screen every 1 SECONDS 
+// The updater is used to update the screen every 5 SECONDS 
 function updater() {
   setTime()
   setDate()
@@ -85,7 +85,7 @@ function setBattery() {
   } else {
     document.getElementById("battery").style.fill = "#b3b3b3"
   }
-  document.getElementById("battery").text = (Math.floor(battery.chargeLevel) + "%");
+  document.getElementById("battery").text = (Math.round(battery.chargeLevel) + "%");
   //document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
 }
 
@@ -138,10 +138,13 @@ function setStatusImage(status) {
 function fetchCompaionData(cmd) {
   setStatusImage('refresh.png')
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    document.getElementById("companionStatusCircle").style.fill = "#3366ff";
     // Send a command to the companion
     messaging.peerSocket.send({
       command: cmd
     });
+  } else {
+    document.getElementById("companionStatusCircle").style.fill = "#ff3333";
   }
 }
 
@@ -149,41 +152,45 @@ function fetchCompaionData(cmd) {
 function processWeatherData(data) {
   console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
-    document.getElementById("temp").text = data.temperature;
+    //temp
+    document.getElementById("temp").text = Math.round(data.temperature);
     
+    //humidity
+    document.getElementById("hum").text = "h" + data.humidity + "%";   
+    document.getElementById("hum").style.fontWeight = "regular";    
     if (data.humidity < 10) {
       document.getElementById("hum").style.fontWeight = "bold";
-    } else {
-      document.getElementById("hum").style.fontWeight = "normal";
-    }
-    document.getElementById("hum").text = "h" + data.humidity + "%";
+    } 
     
-    if (document.getElementById("weatherDesc").length > 19) {
-          document.getElementById("weatherDesc").style.fontSize = 20;
+    //weather description
+    document.getElementById("weatherDesc").text = data.weatherDesc;    
+    if (document.getElementById("weatherDesc").text.length < 20) {
+          document.getElementById("weatherDesc").style.fontSize = 27;
     } else {
-      document.getElementById("weatherDesc").style.fontSize = 25;
+      document.getElementById("weatherDesc").style.fontSize = 22;
     }
-    document.getElementById("weatherDesc").text = data.weatherDesc;
     
+    //windspeed
+    document.getElementById("windspeed").text = Math.round(data.windspeed) + " mph ";
+    document.getElementById("windspeed").style.fontWeight = "regular";
     if (data.windspeed > 19) {
       document.getElementById("windspeed").style.fontWeight = "bold";
-    } else {
-      document.getElementById("windspeed").style.fontWeight = "normal";
-    }
-    document.getElementById("windspeed").text = Math.round(data.windspeed) + "mph ";
+    } else
     
+    //cloud cover
     document.getElementById("clouds").text = data.clouds + "% cldy";
+    
+    //time since weather station last updated
     var wxDate = new Date(data.wxTime);
     var curDate = (new Date().getTime() / 1000);
     var diff = (curDate - wxDate);
     var lastUpdatedMinutes = Math.round(diff / 60)
-    
-    if (lastUpdatedMinutes > 44) {
+    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes + " min";
+    document.getElementById("wxTime").style.fontWeight = "regular";
+    if (lastUpdatedMinutes > 29) {
       document.getElementById("wxTime").style.fontWeight = "bold";
-    } else {
-      document.getElementById("wxTime").style.fontWeight = "normal";
+      console.log("bold");
     }
-    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes + "m";
     
     var dir = 0;
     if (data.winddir > 348.75 || data.winddir < 11.25) {
@@ -313,7 +320,7 @@ function processOneBg(data) {
     setArrowDirection(0)
     setStatusImage('warrning.png')
     // call function every 10 or 15 mins to check again and see if the data is there   
-    setTimeout(fiveMinUpdater, 900000)    
+    setTimeout(fiveMinUpdater, 600000)    
   }
 }
 
@@ -501,7 +508,7 @@ btnRight.onclick = function(evt) {
 //----------------------------------------------------------
 
 document.getElementById("status-image").onclick = (e) => {
-  vibration.start("bump");
+  vibration.start("nudge");
   fiveMinUpdater()
 }
  

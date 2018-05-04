@@ -37,10 +37,11 @@
   font-size:55;
 }
 
-#battery {
+/*#battery {
   width:65;
   height:17;
-}
+}*/
+
 #battery-level {
  width:30; 
  height:16; 
@@ -61,7 +62,7 @@
 }
 
 .weather-text {
-  text-length: 100;
+  text-length: 30;
   font-family: SevilleSharp;
   font-size:27;
 }
@@ -71,6 +72,12 @@
 
 .weather-color {
   fill: #b3ffb3;
+}
+
+.battery-text {
+  text-length: 4;
+  font-family: SevilleSharp-Bold;
+  font-size:27;
 }
 
 .status-text {
@@ -92,7 +99,7 @@
 }
 .h3 {
   fill: #b3b3b3;  
-  font-family: "System-Light";
+  font-family: System-Light;
   font-size:22;
 }
 
@@ -107,6 +114,10 @@
 
 .gval {
   fill:#4d94ff;
+}
+
+.companionStatus {
+  fill:#ff3333;
 }
 
 .heart-color {

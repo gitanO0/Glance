@@ -12,13 +12,13 @@
       <!-- <rect id="battery-level" x="7%" y="4%"/>
       <image class="image"x="7%" y="1%" href="img/battery.png" fill="white"/> -->
       
-      <text id="battery" class="status-text h2" x="1%" y="8%"></text>
+      <text id="battery" class="battery-text" x="2%" y="8%"></text>
       
       <text id="day" x="1%" y="48%"></text> 
       <text id="date" x="32%" y="48%"></text> 
       
-      <text id="temp" class="weather-text weather-color" x="33%" y="8%" text-anchor="end">--</text>
-      <image id= "degree" class="image weather-color" x="34.5%" y="2%" href="img/degree.png" width="8" height="8"/> 
+      <text id="temp" class="weather-text weather-color" x="36%" y="8%" text-anchor="end">--</text>
+      <image id="degree" class="image weather-color" x="37.5%" y="2%" href="img/degree.png" width="8" height="8"/> 
       <text id="hum" class="weather-text weather-color" x="66%" y="8%" text-anchor="end">--</text>
       
       <text id="weatherDesc" class="weather-text weather-color" x="70%" y="17.5%" text-anchor="end">--</text>
@@ -39,11 +39,11 @@
       <text id="low" class="status-text h2" x="99%" y="65%+98"  text-anchor="end">70</text>
       <use href="#graph" id="docGraph" x="35%" y="65%+24" width="140" height="70" />
    
-      <text id="hours" x="36%" y="71%" text-anchor="end">00</text>
-      <text id="colon1" x="40.7%" y="65%" text-anchor="end">:</text>
-      <text id="minutes" x="70%" y="69%" text-anchor="end">00</text>
-      <text id="colon2" x="75.5%" y="62%" text-anchor="end">:</text>
-      <text id="seconds" x="96%" y="63%" text-anchor="end">00</text>
+      <text id="hours" x="36%" y="72%" text-anchor="end">00</text>
+      <text id="colon1" x="40.7%" y="66%" text-anchor="end">:</text>
+      <text id="minutes" x="70%" y="70%" text-anchor="end">00</text>
+      <text id="colon2" x="75.5%" y="63%" text-anchor="end">:</text>
+      <text id="seconds" x="96%" y="64%" text-anchor="end">00</text>
 
      <image class="image heart-color" x="2%" y="78%" href="img/heart.png"/>
      <text id="heart" class="h2 status-text heart-color"  x="7%" y="97%" text-anchor="middle">--</text>
@@ -51,7 +51,9 @@
      <image class="image step-color" x="18%" y="78%" href="img/steps.png"/>
      <text id="step" class="h2 status-text step-color"  x="25%" y="97%" text-anchor="middle">--</text>
       
-     <image id="status-image" class="image" x="85%" y="33%" href="img/refresh.png" pointer-events="visible" width="32"/>
+     <image id="status-image" class="image" x="85%" y="31%" href="img/refresh.png" pointer-events="visible" width="32"/>
+      
+     <circle id="companionStatusCircle"class="companionStatus" cx="90.7%" cy="46%" r="5" />
       
       <!-- Alert -->
       <svg id="popup" display="none" >
