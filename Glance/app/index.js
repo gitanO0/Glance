@@ -25,6 +25,8 @@ let myGraph = new Graph(docGraph);
 
 let showAlertModal = true;
 
+let numPulls = 0;
+
 let timeOut;
 // Init 
 setTime() 
@@ -180,72 +182,32 @@ function processWeatherData(data) {
       document.getElementById("uv").style.fontWeight = "bold";
     } 
     
+    //raintoday
+    if (data.raintoday == "0.00") {
+      document.getElementById("raintoday").text = "rt0";
+    } else {
+      document.getElementById("raintoday").text = "rt" + data.raintoday;  
+    }
+    document.getElementById("raintoday").style.fontWeight = "regular";
+    if (data.raintoday > .15) {
+      document.getElementById("raintoday").style.fontWeight = "bold";
+    } 
+    
     //time since weather station last updated
     var wxDate = data.wxTime;
     var curDate = (new Date().getTime() / 1000);
     console.log(wxDate + " " + curDate);
     var diff = (curDate - wxDate);
     var lastUpdatedMinutes = Math.round(diff / 60)
-    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes + " min";
+    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes;
     document.getElementById("wxTime").style.fontWeight = "regular";
     if (lastUpdatedMinutes > 29) {
       document.getElementById("wxTime").style.fontWeight = "bold";
       console.log("bold");
     }
     
-    var dir = 0;
-    if (data.winddir > 348.75 && data.winddir < 11.25) {
-          dir = "N"
-        }
-    else if (data.winddir > 326.25 && data.winddir < 348.75) {
-               dir = "NNW"
-             }
-    else if (data.winddir > 303.75 && data.winddir < 326.25) {
-               dir = "NW"
-             }
-    else if (data.winddir > 281.25 && data.winddir < 303.75) {
-               dir = "WNW"
-             }
-    else if (data.winddir > 258.75 && data.winddir < 281.25) {
-               dir = "W"
-             }  
-    else if (data.winddir > 236.25 && data.winddir < 258.75) {
-               dir = "WSW"
-             }      
-    else if (data.winddir > 213.75 && data.winddir < 236.25) {
-               dir = "SW"
-             }       
-    else if (data.winddir > 191.25 && data.winddir < 213.75) {
-               dir = "SSW"
-             }     
-    else if (data.winddir > 168.75 && data.winddir < 191.25) {
-               dir = "S"
-             }      
-    else if (data.winddir > 146.25 && data.winddir < 168.75) {
-               dir = "SSE"
-             }      
-    else if (data.winddir > 123.75 && data.winddir < 146.25) {
-               dir = "SE"
-             }  
-    else if (data.winddir > 101.25 && data.winddir < 123.75) {
-               dir = "ESE"
-             }       
-    else if (data.winddir > 78.75 && data.winddir < 101.25) {
-               dir = "E"
-             }      
-    else if (data.winddir > 56.25 && data.winddir < 78.75) {
-               dir = "ENE"
-             }      
-    else if (data.winddir > 33.75 && data.winddir < 56.25) {
-               dir = "NE"
-             }   
-    else if (data.winddir > 11.25 && data.winddir < 33.75) {
-               dir = "NNE"
-             } 
-    else {dir = "---"}
-    //document.getElementById("windDir").text = dir;
     //windspeed
-    document.getElementById("windspeed").text = Math.round(data.windspeed) + "(" + Math.round(data.windgust) + ")mph " + dir;
+    document.getElementById("windspeed").text = Math.round(data.windspeed) + "(" + Math.round(data.windgust) + ")mph " + data.winddir;
     document.getElementById("windspeed").style.fontWeight = "regular";
     if (data.windspeed > 19) {
       document.getElementById("windspeed").style.fontWeight = "bold";
@@ -260,6 +222,7 @@ function processWeatherData(data) {
       document.getElementById("dewpoint").style.fill = cold;
       document.getElementById("wxTime").style.fill = cold;
       document.getElementById("uv").style.fill = cold;
+      document.getElementById("raintoday").style.fill = cold;
       //document.getElementById("windDir").style.fill = cold;
       //document.getElementById("degree").style.fill = cold;
     }
@@ -272,6 +235,7 @@ function processWeatherData(data) {
       document.getElementById("dewpoint").style.fill = cool;
       document.getElementById("wxTime").style.fill = cool;
       document.getElementById("uv").style.fill = cool;
+      document.getElementById("raintoday").style.fill = cool;
       //document.getElementById("windDir").style.fill = cool;
       //document.getElementById("degree").style.fill = cool;
     }
@@ -284,6 +248,7 @@ function processWeatherData(data) {
       document.getElementById("dewpoint").style.fill = warm;
       document.getElementById("wxTime").style.fill = warm;
       document.getElementById("uv").style.fill = warm;
+      document.getElementById("raintoday").style.fill = warm;
       //document.getElementById("windDir").style.fill = warm;
       //document.getElementById("degree").style.fill = warm;
     }
@@ -296,6 +261,7 @@ function processWeatherData(data) {
       document.getElementById("dewpoint").style.fill = hot;
       document.getElementById("wxTime").style.fill = hot;
       document.getElementById("uv").style.fill = hot;
+      document.getElementById("raintoday").style.fill = hot;
       //document.getElementById("windDir").style.fill = hot;
       //document.getElementById("degree").style.fill = hot;
     }
@@ -363,7 +329,7 @@ inbox.onnewfile = () => {
         sgv = mmol(sgv)
       }
       
-      
+      console.log(data.settings.lowThreshold);
       if( sgv >=  data.settings.highThreshold) {
         document.getElementById("bg").style.fill = "orange"
         if((data.BGD[count].delta > 0)){
@@ -379,7 +345,15 @@ inbox.onnewfile = () => {
         document.getElementById("bg").style.fill="#cc0000"
          if((data.BGD[count].delta < 0)){
             console.log('BG LOW') 
-            startVibration("nudge", 3000, sgv)
+           // mute the alert for 20 minutes... 4 pulls from the cgm
+            if (numPulls == 0) {
+              startVibration("nudge", 3000, sgv);    
+            }
+            if (numPulls == 5) {
+              numPulls = 0;
+            } else {
+              numPulls++;
+            }
             //document.getElementById("bgColor").style.gradient-color1="#58130e"
            } else {
           console.log('BG still LOW, But you are going UP') 

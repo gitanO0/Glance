@@ -17,20 +17,22 @@
       <text id="day" x="1%" y="49%"></text> 
       <text id="date" x="30%" y="49%"></text> 
       
-      <text id="temp" class="weather-text weather-color" x="39%" y="8%" text-anchor="end">--</text>
+      <text id="temp" class="weather-text weather-color" x="40%" y="8%" text-anchor="end">--</text>
       <!--<image id="degree" class="image weather-color" x="37.5%" y="2%" href="img/degree.png" width="8" height="8"/> -->
       <text id="hum" class="weather-text weather-color" x="65%" y="8%" text-anchor="end">--</text>
       
       <text id="weatherDesc" class="weather-text weather-color" x="39%" y="17.5%" text-anchor="middle">--</text>
       
-      <text id="windspeed" class="weather-text weather-color" x="39%" y="27%" text-anchor="middle">--</text>
+      <text id="windspeed" class="weather-text weather-color" x="39%" y="26%" text-anchor="middle">--</text>
       <!-- <text id="windDir" class="weather-text weather-color windDir-text" x="2%" y="27%" text-anchor="start">--</text> -->
       
       <text id="dewpoint" class="weather-text weather-color" x="2%" y="36%" text-anchor="start">--</text>
       
       <text id="uv" class="weather-text weather-color" x="29%" y="36%" text-anchor="start">--</text>
       
-      <text id="wxTime" class="weather-text weather-color wxtime-text" x="52%" y="36%" text-anchor="start">--</text> 
+      <text id="wxTime" class="weather-text weather-color wxtime-text" x="80%" y="36%" text-anchor="end">--</text> 
+      
+      <text id="raintoday" class="weather-text weather-color" x="57%" y="36%" text-anchor="middle">--</text>
 
       <text id="delta" class="status-text h2" x="99%" y="7%" text-anchor="end">loading...</text>
       <text id="bg" class="h1 status-text" x="99%" y="20.5%"  text-anchor="end" >---</text>

@@ -30,9 +30,10 @@ function queryOpenWeather() {
           weatherDesc: data["current_observation"]["weather"],
           windgust: data["current_observation"]["wind_gust_mph"],
           windspeed: data["current_observation"]["wind_mph"],
-          winddir: data["current_observation"]["wind_degrees"],
+          winddir: data["current_observation"]["wind_dir"],
           dewpoint: data["current_observation"]["dewpoint_f"],
           uv: data["current_observation"]["UV"],
+          raintoday: data["current_observation"]["precip_today_in"],
           wxTime: data["current_observation"]["observation_epoch"]
         }
         // Send the weather data to the device

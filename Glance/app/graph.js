@@ -20,8 +20,8 @@ export default class Graph {
       
    this._vals = this._id.getElementsByClassName("gval");
    
-   this._tHigh = 170;
-   this._tLow = 70;
+   //this._tHigh = 170;
+   //this._tLow = 70;
  
    this._tHighLine = this._id.getElementById("tHigh");
    this._tLowLine = this._id.getElementById("tLow");
