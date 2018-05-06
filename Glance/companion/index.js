@@ -17,29 +17,33 @@ var ENDPOINT = null
 
 // Fetch the weather from OpenWeather
 function queryOpenWeather() {
-  let weatherURL = getWeatherEndPoint() + "&APPID=" + getWeatherApiKey();
+  let weatherURL = getWeatherEndPoint();
   console.log(weatherURL);
   return fetch(weatherURL)
   .then(function (response) {
      return response.json()
       .then(function(data) {
-        var weather = {
-          temperature: Math.round(data["main"]["temp"]),
-          humidity: data["main"]["humidity"],
-          weatherDesc: data["weather"][0].description,
-          clouds: data["clouds"]["all"],
-          windspeed: data["wind"]["speed"],
-          winddir: data["wind"]["deg"],
-          wxTime: data["dt"]
+       console.log(data);
+       var weather = {
+          temperature: Math.round(data["current_observation"]["temp_f"]),
+          humidity: data["current_observation"]["relative_humidity"],
+          weatherDesc: data["current_observation"]["weather"],
+          windgust: data["current_observation"]["wind_gust_mph"],
+          windspeed: data["current_observation"]["wind_mph"],
+          winddir: data["current_observation"]["wind_degrees"],
+          dewpoint: data["current_observation"]["dewpoint_f"],
+          uv: data["current_observation"]["UV"],
+          wxTime: data["current_observation"]["observation_epoch"]
         }
         // Send the weather data to the device
-        console.log(data["dt"]);
+        console.log(data["current_observation"]["observation_epoch"]);
         return weather;
       });
   })
   .catch(function (err) {
-    console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
-    console.log("Error fetching weather.You need an API key from openweathermap.org to view weather data. otherwise this error is fine to ignore. " + err);
+    //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
+    console.log(getWeatherEndPoint());
+    console.log("Error getting weather" + err);
   });
 }
 
@@ -191,26 +195,10 @@ function getSgvURL() {
   }
 }
 
-function getWeatherApiKey() {
-  if(getSettings('owmAPI').name){
-    return (getSettings('owmAPI').name);
-  } /*else {
-    return '5e3dd36238597b68d776add0e49a56ff';
-  }*/
-}
-
-
 function getWeatherEndPoint() {
-  if (getSettings('city').name){
-    return "https://api.openweathermap.org/data/2.5/weather?q=" + getSettings('city').name + "&units=" +  getTempType();;
-  }  else {
-    return "https://api.openweathermap.org/data/2.5/weather?q=fort%20collins&units=" +  getTempType();;
+  if (getSettings('StationID').name && getSettings('wuAPI').name){
+    return "https://api.wunderground.com/api/" + getSettings('wuAPI').name + "/conditions/q/pws:" + getSettings('StationID').name + ".json";
   }
-  
-  
-  //t city = ((getSettings("city")) ? getSettings("city").name : 'fort collins');
-
-  //return "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" +  getTempType();
 }
 
 function getTempType() {

@@ -27,12 +27,12 @@ function mySettings(props) {
           settingsKey="tempType"
         />
         <TextInput
-        label="Open Weather Map API Key"
-        settingsKey="owmAPI"
+        label="Wunderground API Key"
+        settingsKey="wuAPI"
         />
         <TextInput
-        label="City"
-        settingsKey="city"
+        label="Station ID"
+        settingsKey="StationID"
         />
     </Page>
   );

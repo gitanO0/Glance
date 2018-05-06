@@ -66,12 +66,13 @@
   font-family: SevilleSharp;
   font-size:27;
 }
-.windDir-text {
-  font-size:28;
-}
 
 .weather-color {
   fill: #b3ffb3;
+}
+
+.wxtime-text {
+   font-size:25;
 }
 
 .battery-text {
