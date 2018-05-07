@@ -223,8 +223,6 @@ function processWeatherData(data) {
       document.getElementById("wxTime").style.fill = cold;
       document.getElementById("uv").style.fill = cold;
       document.getElementById("raintoday").style.fill = cold;
-      //document.getElementById("windDir").style.fill = cold;
-      //document.getElementById("degree").style.fill = cold;
     }
     else if (data.temperature < "65") {
       var cool = "#adebeb";
@@ -236,8 +234,6 @@ function processWeatherData(data) {
       document.getElementById("wxTime").style.fill = cool;
       document.getElementById("uv").style.fill = cool;
       document.getElementById("raintoday").style.fill = cool;
-      //document.getElementById("windDir").style.fill = cool;
-      //document.getElementById("degree").style.fill = cool;
     }
     else if (data.temperature < "85") {
       var warm = "#99ff99";
@@ -249,8 +245,6 @@ function processWeatherData(data) {
       document.getElementById("wxTime").style.fill = warm;
       document.getElementById("uv").style.fill = warm;
       document.getElementById("raintoday").style.fill = warm;
-      //document.getElementById("windDir").style.fill = warm;
-      //document.getElementById("degree").style.fill = warm;
     }
     else {
       var hot = "#ffb399";
@@ -262,8 +256,39 @@ function processWeatherData(data) {
       document.getElementById("wxTime").style.fill = hot;
       document.getElementById("uv").style.fill = hot;
       document.getElementById("raintoday").style.fill = hot;
-      //document.getElementById("windDir").style.fill = hot;
-      //document.getElementById("degree").style.fill = hot;
+    } 
+  }
+}
+
+function processAirQuality(data) {
+  console.log("The air quality is: " + JSON.stringify(data));
+  if(data) {
+    if (data.O3 < 51) {
+        document.getElementById("o3Circle").style.fill = "#00CC00";
+    } else if (data.O3 < 101) {
+        document.getElementById("o3Circle").style.fill = "#FFFF00";
+    } else if (data.O3 < 151) {
+        document.getElementById("o3Circle").style.fill = "#FF6600";
+    } else if (data.O3 < 201) {
+        document.getElementById("o3Circle").style.fill = "#FF0000";
+    } else if (data.O3 < 301) {
+        document.getElementById("o3Circle").style.fill = "#99004C";
+    } else {
+        document.getElementById("o3Circle").style.fill = "#7E0023";
+    }
+
+    if (data.PM2_5 < 51) {
+        document.getElementById("pm25Circle").style.fill = "#00CC00";
+    } else if (data.PM2_5 < 101) {
+        document.getElementById("pm25Circle").style.fill = "#FFFF00";
+    } else if (data.PM2_5 < 151) {
+        document.getElementById("pm25Circle").style.fill = "#FF6600";
+    } else if (data.PM2_5 < 201) {
+        document.getElementById("pm25Circle").style.fill = "#FF0000";
+    } else if (data.PM2_5 < 301) {
+        document.getElementById("pm25Circle").style.fill = "#99004C";
+    } else {
+        document.getElementById("pm25Circle").style.fill = "#7E0023";
     }
   }
 }
@@ -406,7 +431,9 @@ inbox.onnewfile = () => {
       // Update the graph
       myGraph.update(data.BGD);  
       
-      processWeatherData(data.weather)
+      processWeatherData(data.weather);
+      
+      processAirQuality(data.airQuality);
     }
   } while (fileName);
   fs.unlinkSync('file.txt');

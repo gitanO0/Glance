@@ -10,6 +10,7 @@ import { geolocation } from "geolocation";
 // // default URL pointing at xDrip Plus endpoint
 var URL = null;
 var weatherURL = null;
+var airQualityURL = null;
 //WeatheyAPI connection
 var API_KEY = null;
 var ENDPOINT = null
@@ -45,6 +46,28 @@ function queryOpenWeather() {
     //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
     console.log(getWeatherEndPoint());
     console.log("Error getting weather" + err);
+  });
+}
+
+function queryAirNow() {
+  let airQualityURL = getAirNowEndPoint();
+  console.log(airQualityURL);
+  return fetch(airQualityURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       var airQuality = {
+         O3: data[0]["AQI"],
+         PM2_5: data[1]["AQI"]
+        }
+        // Send the air quality data to the device
+        return airQuality;
+      });
+  })
+  .catch(function (err) {
+    console.log(getAirNowEndPoint());
+    console.log("Error getting air quality" + err);
   });
 }
 
@@ -116,6 +139,10 @@ function formatReturnData() {
      let weatherPromise = new Promise(function(resolve, reject) {
       resolve( queryOpenWeather() );
     });
+  
+    let airQualityPromise = new Promise(function(resolve, reject) {
+      resolve( queryAirNow() );
+    });
     
     let BGDPromise = new Promise(function(resolve, reject) {
       resolve( queryBGD() );
@@ -135,15 +162,16 @@ function formatReturnData() {
      lowThreshold = 70
     }
       
-    Promise.all([weatherPromise, BGDPromise]).then(function(values) {
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
+        'airQuality' : values[2],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
           'lowThreshold': lowThreshold,
-          'timeFormat' : getSettings('timeFormat')
+          'timeFormat' : getSettings('timeFormat'),
         }
       }
       returnData(dataToSend)
@@ -199,6 +227,13 @@ function getSgvURL() {
 function getWeatherEndPoint() {
   if (getSettings('StationID').name && getSettings('wuAPI').name){
     return "https://api.wunderground.com/api/" + getSettings('wuAPI').name + "/conditions/q/pws:" + getSettings('StationID').name + ".json";
+  }
+}
+
+function getAirNowEndPoint() {
+  if (getSettings('anAPI').name && getSettings('anZip').name){
+    return "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=" + getSettings('anZip').name + "&distance=10&API_KEY=" + getSettings('anAPI').name;
+    /*return "http://docs.airnowapi.org/QueryTool/ajax/executeWebServiceUrl?serviceId=ObservationAQ&url=http%3A%2F%2Fwww.airnowapi.org%2Faq%2Fobservation%2FzipCode%2Fcurrent%2F%3Fformat%3Dapplication%2Fjson%26zipCode%3D" + getSettings('anZip').name + "%26distance%3D10%26API_KEY%3D" + getSettings('anAPI').name;*/
   }
 }
 
