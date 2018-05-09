@@ -31,16 +31,16 @@ function mySettings(props) {
         settingsKey="wuAPI"
         />
         <TextInput
+        label="WU Station ID"
+        settingsKey="StationID"
+        />
+        <TextInput
         label="AirNow API Key"
         settingsKey="anAPI"
         />
        <TextInput
         label="AirNow Zip Code"
         settingsKey="anZip"
-        />
-        <TextInput
-        label="Station ID"
-        settingsKey="StationID"
         />
     </Page>
   );

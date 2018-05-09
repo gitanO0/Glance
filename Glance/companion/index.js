@@ -26,7 +26,7 @@ function queryOpenWeather() {
       .then(function(data) {
        console.log(data);
        var weather = {
-          temperature: Math.round(data["current_observation"]["temp_f"]),
+          temperature: data["current_observation"]["temp_f"],
           humidity: data["current_observation"]["relative_humidity"],
           weatherDesc: data["current_observation"]["weather"],
           windgust: data["current_observation"]["wind_gust_mph"],

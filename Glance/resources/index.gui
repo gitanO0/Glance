@@ -8,31 +8,32 @@
           gradient-x2="0" gradient-y2="100%-80"
           gradient-color1="#000080" gradient-color2="black" />
       </svg>
-
-      <!-- <rect id="battery-level" x="7%" y="4%"/>
-      <image class="image"x="7%" y="1%" href="img/battery.png" fill="white"/> -->
       
       <text id="battery" class="battery-text" x="2%" y="8%"></text>
       
-      <text id="day" x="1%" y="49%"></text> 
-      <text id="date" x="33%" y="49%"></text> 
+      <text id="day" x="1%" y="49%" text-anchor="start"></text> 
+      <text id="date" x="82%" y="49%" text-anchor="end"></text> 
       
       <text id="temp" class="weather-text weather-color" x="40%" y="8%" text-anchor="end">--</text>
-      <!--<image id="degree" class="image weather-color" x="37.5%" y="2%" href="img/degree.png" width="8" height="8"/> -->
-      <text id="hum" class="weather-text weather-color" x="65%" y="8%" text-anchor="end">--</text>
+      <text id="tempTrend" class="weatherTrend-text weather-color" x="37%" y="8%" text-anchor="start"></text>
+
+      <text id="hum" class="weather-text weather-color" x="61%" y="8%" text-anchor="end">--</text>
+      <text id="humPercent" class="weatherTrend-text weather-color" x="61.5%" y="6%" text-anchor="start">%</text>
+      <text id="humTrend" class="weatherTrend-text weather-color" x="62%" y="9%" text-anchor="start"></text>
       
       <text id="weatherDesc" class="weather-text weather-color" x="39%" y="17.5%" text-anchor="middle">--</text>
       
       <text id="windspeed" class="weather-text weather-color" x="39%" y="26%" text-anchor="middle">--</text>
-      <!-- <text id="windDir" class="weather-text weather-color windDir-text" x="2%" y="27%" text-anchor="start">--</text> -->
       
-      <text id="dewpoint" class="weather-text weather-color" x="2%" y="36%" text-anchor="start">--</text>
+      <text id="dewpoint" class="weather-text weather-color" x="25%" y="36%" text-anchor="end">--</text>
+      <text id="dpTrend" class="weatherTrend-text weather-color" x="22%" y="36%" text-anchor="start"></text>
       
-      <text id="uv" class="weather-text weather-color" x="29%" y="36%" text-anchor="start">--</text>
+      <text id="uv" class="weather-text weather-color" x="47%" y="36%" text-anchor="end">--</text>
+      <text id="uvTrend" class="weatherTrend-text weather-color" x="48%" y="34%" text-anchor="start"></text>
       
       <text id="wxTime" class="weather-text weather-color wxtime-text" x="80%" y="36%" text-anchor="end">--</text> 
       
-      <text id="raintoday" class="weather-text weather-color" x="57%" y="36%" text-anchor="middle">--</text>
+      <text id="raintoday" class="weather-text weather-color" x="67%" y="36%" text-anchor="end">--</text>
 
       <text id="delta" class="status-text h2" x="99%" y="7%" text-anchor="end">loading...</text>
       <text id="bg" class="h1 status-text" x="99%" y="20.5%"  text-anchor="end" >---</text>
@@ -56,12 +57,12 @@
      <image class="image step-color" x="18%" y="78%" href="img/steps.png"/>
      <text id="step" class="h2 status-text step-color"  x="25%" y="97%" text-anchor="middle">--</text>
       
-     <image id="status-image" class="image" x="85%" y="31%" href="img/refresh.png" pointer-events="visible"/>
+     <image id="status-image" class="image" x="87%" y="31%" href="img/refresh.png" pointer-events="visible"/>
       
-     <circle id="companionStatusCircle"class="companionStatus" cx="90.7%" cy="46%" r="5" />
+     <circle id="companionStatusCircle"class="companionStatus" cx="84%" cy="32%" r="4" />
       
-     <circle id="o3Circle"class="o3" cx="96%" cy="43%" r="4" />
-     <circle id="pm25Circle"class="pm25" cx="96%" cy="48%" r="4" />
+     <circle id="o3Circle"class="o3" cx="88%" cy="46%" r="6" />
+     <circle id="pm25Circle"class="pm25" cx="96%" cy="46%" r="6" />
       
       <!-- Alert -->
       <svg id="popup" display="none" >

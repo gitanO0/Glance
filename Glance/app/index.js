@@ -11,6 +11,10 @@ import clock from "clock";
 
 import Graph from "graph.js";
 
+let prevTemp = 0;
+let prevHum = 0;
+let prevDP = 0;
+let prevUV = 0;
 
 let heartRate = new HeartRateSensor();
 let totalSeconds = 0;
@@ -109,7 +113,7 @@ function startMonitors() {
 
 //minutes since last pull 
 function addSecond() {
-  totalSeconds += 1;
+  totalSeconds += 5;
   // document.getElementById("seconds").text = pad(totalSeconds % 60);
   document.getElementById("bgMinutes").text = parseInt(totalSeconds / 60) + ' mins';
 }
@@ -155,14 +159,37 @@ function processWeatherData(data) {
   console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
     //temp
+    console.log("prev temp: " + prevTemp + ", curr temp: " + data.temperature)
+    if (prevTemp != 0) {
+      if (prevTemp < data.temperature) {
+        document.getElementById("tempTrend").text = "+";    
+      } else if (prevTemp > data.temperature) {
+        document.getElementById("tempTrend").text = "-"; 
+      } else {
+        document.getElementById("tempTrend").text = ""; 
+      } 
+    }
     document.getElementById("temp").text = Math.round(data.temperature) + "°";
+    prevTemp = data.temperature;
     
     //humidity
-    document.getElementById("hum").text = "h" + data.humidity;   
+    var hum = data.humidity.slice(0, -1);
+    document.getElementById("hum").text = "h" + hum;   
     document.getElementById("hum").style.fontWeight = "regular";    
-    if (data.humidity < 10) {
+    if (hum < 15) {
       document.getElementById("hum").style.fontWeight = "bold";
-    } 
+    }
+    console.log("prev hum: " + prevHum + ", curr hum: " + hum)
+    if (prevHum != 0) {
+      if (prevHum < hum) {
+        document.getElementById("humTrend").text = "+";    
+      } else if (prevHum > hum) {
+        document.getElementById("humTrend").text = "-"; 
+      } else {
+        document.getElementById("humTrend").text = ""; 
+      } 
+    }
+    prevHum = hum;
     
     //weather description
     document.getElementById("weatherDesc").text = capitalizeFirstLetter(data.weatherDesc);    
@@ -174,13 +201,35 @@ function processWeatherData(data) {
     
     //dew point
     document.getElementById("dewpoint").text = "dp" + data.dewpoint + "°";
+    console.log("prev dp: " + prevDP + ", curr dp: " + data.dewpoint)
+    if (prevDP != 0) {
+      if (prevDP < data.dewpoint) {
+        document.getElementById("dpTrend").text = "+";    
+      } else if (prevDP > data.dewpoint) {
+        document.getElementById("dpTrend").text = "-"; 
+      } else {
+        document.getElementById("dpTrend").text = ""; 
+      } 
+    }
+    prevDP = data.dewpoint;
     
     //UV
     document.getElementById("uv").text = "uv" + data.uv;
     document.getElementById("uv").style.fontWeight = "regular";
     if (data.uv > 8) {
       document.getElementById("uv").style.fontWeight = "bold";
-    } 
+    }
+    console.log("prev uv: " + prevUV + ", curr uv: " + data.uv)
+    if (prevUV != 0) {
+      if (prevUV < data.uv) {
+        document.getElementById("uvTrend").text = "+";    
+      } else if (prevUV > data.uv) {
+        document.getElementById("uvTrend").text = "-"; 
+      } else {
+        document.getElementById("uvTrend").text = ""; 
+      } 
+    }
+    prevUV = data.uv;    
     
     //raintoday
     if (data.raintoday == "0.00") {
@@ -201,7 +250,7 @@ function processWeatherData(data) {
     var lastUpdatedMinutes = Math.round(diff / 60)
     document.getElementById("wxTime").text = "+" + lastUpdatedMinutes;
     document.getElementById("wxTime").style.fontWeight = "regular";
-    if (lastUpdatedMinutes > 29) {
+    if (lastUpdatedMinutes > 19) {
       document.getElementById("wxTime").style.fontWeight = "bold";
       console.log("bold");
     }
@@ -216,10 +265,15 @@ function processWeatherData(data) {
     if (data.temperature < "32") {
       var cold = "#99bbff";
       document.getElementById("temp").style.fill = cold;
+      document.getElementById("tempTrend").style.fill = cold;
       document.getElementById("hum").style.fill = cold;
+      document.getElementById("humPercent").style.fill = cold;
+      document.getElementById("humTrend").style.fill = cold;
       document.getElementById("weatherDesc").style.fill = cold;
       document.getElementById("windspeed").style.fill = cold;
       document.getElementById("dewpoint").style.fill = cold;
+      document.getElementById("dpTrend").style.fill = cold;
+      document.getElementById("uvTrend").style.fill = cold;
       document.getElementById("wxTime").style.fill = cold;
       document.getElementById("uv").style.fill = cold;
       document.getElementById("raintoday").style.fill = cold;
@@ -227,10 +281,15 @@ function processWeatherData(data) {
     else if (data.temperature < "65") {
       var cool = "#adebeb";
       document.getElementById("temp").style.fill = cool;
+      document.getElementById("tempTrend").style.fill = cool;
       document.getElementById("hum").style.fill = cool;
+      document.getElementById("humPercent").style.fill = cool;
+      document.getElementById("humTrend").style.fill = cool;
       document.getElementById("weatherDesc").style.fill = cool;
       document.getElementById("windspeed").style.fill = cool;
       document.getElementById("dewpoint").style.fill = cool;
+      document.getElementById("dpTrend").style.fill = cool;
+      document.getElementById("uvTrend").style.fill = cool;      
       document.getElementById("wxTime").style.fill = cool;
       document.getElementById("uv").style.fill = cool;
       document.getElementById("raintoday").style.fill = cool;
@@ -238,10 +297,15 @@ function processWeatherData(data) {
     else if (data.temperature < "85") {
       var warm = "#99ff99";
       document.getElementById("temp").style.fill = warm;
+      document.getElementById("tempTrend").style.fill = warm;
       document.getElementById("hum").style.fill = warm;
+      document.getElementById("humPercent").style.fill = warm;
+      document.getElementById("humTrend").style.fill = warm;
       document.getElementById("weatherDesc").style.fill = warm;
       document.getElementById("windspeed").style.fill = warm;
       document.getElementById("dewpoint").style.fill = warm;
+      document.getElementById("dpTrend").style.fill = warm;
+      document.getElementById("uvTrend").style.fill = warm;
       document.getElementById("wxTime").style.fill = warm;
       document.getElementById("uv").style.fill = warm;
       document.getElementById("raintoday").style.fill = warm;
@@ -249,10 +313,15 @@ function processWeatherData(data) {
     else {
       var hot = "#ffb399";
       document.getElementById("temp").style.fill = hot;
+      document.getElementById("tempTrend").style.fill = hot;
       document.getElementById("hum").style.fill = hot;
+      document.getElementById("humPercent").style.fill = hot;
+      document.getElementById("humTrend").style.fill = hot;
       document.getElementById("weatherDesc").style.fill = hot;
       document.getElementById("windspeed").style.fill = hot;
       document.getElementById("dewpoint").style.fill = hot;
+      document.getElementById("dpTrend").style.fill = hot;
+      document.getElementById("uvTrend").style.fill = hot;      
       document.getElementById("wxTime").style.fill = hot;
       document.getElementById("uv").style.fill = hot;
       document.getElementById("raintoday").style.fill = hot;
