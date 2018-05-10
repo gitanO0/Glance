@@ -13,8 +13,7 @@ var weatherURL = null;
 var airQualityURL = null;
 //WeatheyAPI connection
 var API_KEY = null;
-var ENDPOINT = null
-
+var ENDPOINT = null;
 
 // Fetch the weather from OpenWeather
 function queryOpenWeather() {
@@ -136,14 +135,14 @@ function returnData(data) {
 }
 
 function formatReturnData() {
-     let weatherPromise = new Promise(function(resolve, reject) {
-      resolve( queryOpenWeather() );
-    });
+    let weatherPromise = new Promise(function(resolve, reject) {
+       resolve( queryOpenWeather() );
+     });
   
-    let airQualityPromise = new Promise(function(resolve, reject) {
-      resolve( queryAirNow() );
-    });
-    
+     let airQualityPromise = new Promise(function(resolve, reject) {
+       resolve( queryAirNow() );
+     });
+  
     let BGDPromise = new Promise(function(resolve, reject) {
       resolve( queryBGD() );
     });

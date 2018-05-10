@@ -17,9 +17,9 @@
       <text id="temp" class="weather-text weather-color" x="40%" y="8%" text-anchor="end">--</text>
       <text id="tempTrend" class="weatherTrend-text weather-color" x="37%" y="8%" text-anchor="start"></text>
 
-      <text id="hum" class="weather-text weather-color" x="61%" y="8%" text-anchor="end">--</text>
-      <text id="humPercent" class="weatherTrend-text weather-color" x="61.5%" y="6%" text-anchor="start">%</text>
-      <text id="humTrend" class="weatherTrend-text weather-color" x="62%" y="9%" text-anchor="start"></text>
+      <text id="hum" class="weather-text weather-color" x="57%" y="8%" text-anchor="end">--</text>
+      <text id="humPercent" class="smallPercent-text weather-color" x="57.5%" y="6%" text-anchor="start">%</text>
+      <text id="humTrend" class="weatherTrend-text weather-color" x="62.5%" y="4%" text-anchor="start"></text>
       
       <text id="weatherDesc" class="weather-text weather-color" x="39%" y="17.5%" text-anchor="middle">--</text>
       
@@ -28,12 +28,12 @@
       <text id="dewpoint" class="weather-text weather-color" x="25%" y="36%" text-anchor="end">--</text>
       <text id="dpTrend" class="weatherTrend-text weather-color" x="22%" y="36%" text-anchor="start"></text>
       
-      <text id="uv" class="weather-text weather-color" x="47%" y="36%" text-anchor="end">--</text>
-      <text id="uvTrend" class="weatherTrend-text weather-color" x="48%" y="34%" text-anchor="start"></text>
+      <text id="uv" class="weather-text weather-color" x="45%" y="36%" text-anchor="end">--</text>
+      <text id="uvTrend" class="weatherTrend-text weather-color" x="45%" y="33%" text-anchor="start"></text>
       
       <text id="wxTime" class="weather-text weather-color wxtime-text" x="80%" y="36%" text-anchor="end">--</text> 
       
-      <text id="raintoday" class="weather-text weather-color" x="67%" y="36%" text-anchor="end">--</text>
+      <text id="raintoday" class="weather-text weather-color" x="65%" y="36%" text-anchor="end">--</text>
 
       <text id="delta" class="status-text h2" x="99%" y="7%" text-anchor="end">loading...</text>
       <text id="bg" class="h1 status-text" x="99%" y="20.5%"  text-anchor="end" >---</text>

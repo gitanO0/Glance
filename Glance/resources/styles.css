@@ -37,11 +37,6 @@
   font-size:55;
 }
 
-/*#battery {
-  width:65;
-  height:17;
-}*/
-
 #battery-level {
  width:30; 
  height:16; 
@@ -67,10 +62,16 @@
   font-size:27;
 }
 
+.smallPercent-text {
+  text-length: 1;
+  font-family: SevilleSharp;
+  font-size:20;
+}
+
 .weatherTrend-text {
   text-length: 1;
   font-family: SevilleSharp;
-  font-size:22;
+  font-size:24;
 }
 
 .weather-color {

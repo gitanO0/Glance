@@ -31,6 +31,9 @@ let showAlertModal = true;
 
 let numPulls = 0;
 
+let numWeatherDataPulls = 3;  //initiize at 3 (15 minutes - 3 data pulls) to allow a first run of the weather process
+let prevWeatherPullTime = null;
+
 let timeOut;
 // Init 
 setTime() 
@@ -40,8 +43,8 @@ startMonitors()
 
 // The updater is used to update the screen every 5 SECONDS 
 function updater() {
-  setTime()
-  setDate()
+  //setTime()  //no need for the "settime" process to run after the init anymore due to implementaion of clock class
+  //setDate()  //moved to the 5 min updater to reduce processing cycles
   setBattery()
   startMonitors()
   addSecond()
@@ -50,8 +53,8 @@ setInterval(updater, 5000);
 
 // The fiveMinUpdater is used to update the screen every 5 MINUTES 
 function fiveMinUpdater() {
+  setDate();
   fetchCompaionData();
-  // fetchCompaionData('weather');
 }
 
 function setTime() {
@@ -154,10 +157,29 @@ function fetchCompaionData(cmd) {
   }
 }
 
+function processPrevWeatherPullDifTime(time) {
+  if (time) {
+    var wxDate = time;
+    var curDate = (new Date().getTime() / 1000);
+    console.log(wxDate + " " + curDate);
+    var diff = (curDate - wxDate);
+    var lastUpdatedMinutes = Math.round(diff / 60)
+    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes;
+    document.getElementById("wxTime").style.fontWeight = "regular";
+    if (lastUpdatedMinutes > 19) {
+      document.getElementById("wxTime").style.fontWeight = "bold";
+      console.log("bold");
+    }
+  }
+}
+
 // Display the weather data received from the companion
 function processWeatherData(data) {
   console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
+    //set the weather pull time
+    prevWeatherPullTime = data.wxTime;
+    
     //temp
     console.log("prev temp: " + prevTemp + ", curr temp: " + data.temperature)
     if (prevTemp != 0) {
@@ -176,8 +198,10 @@ function processWeatherData(data) {
     var hum = data.humidity.slice(0, -1);
     document.getElementById("hum").text = "h" + hum;   
     document.getElementById("hum").style.fontWeight = "regular";    
+    document.getElementById("humTrend").style.fontWeight = "regular";
     if (hum < 15) {
       document.getElementById("hum").style.fontWeight = "bold";
+      document.getElementById("humTrend").style.fontWeight = "bold";
     }
     console.log("prev hum: " + prevHum + ", curr hum: " + hum)
     if (prevHum != 0) {
@@ -216,8 +240,10 @@ function processWeatherData(data) {
     //UV
     document.getElementById("uv").text = "uv" + data.uv;
     document.getElementById("uv").style.fontWeight = "regular";
+    document.getElementById("uvTrend").style.fontWeight = "regular";
     if (data.uv > 8) {
       document.getElementById("uv").style.fontWeight = "bold";
+      document.getElementById("uvTrend").style.fontWeight = "bold";
     }
     console.log("prev uv: " + prevUV + ", curr uv: " + data.uv)
     if (prevUV != 0) {
@@ -243,17 +269,7 @@ function processWeatherData(data) {
     } 
     
     //time since weather station last updated
-    var wxDate = data.wxTime;
-    var curDate = (new Date().getTime() / 1000);
-    console.log(wxDate + " " + curDate);
-    var diff = (curDate - wxDate);
-    var lastUpdatedMinutes = Math.round(diff / 60)
-    document.getElementById("wxTime").text = "+" + lastUpdatedMinutes;
-    document.getElementById("wxTime").style.fontWeight = "regular";
-    if (lastUpdatedMinutes > 19) {
-      document.getElementById("wxTime").style.fontWeight = "bold";
-      console.log("bold");
-    }
+    processPrevWeatherPullDifTime(data.wxTime);
     
     //windspeed
     document.getElementById("windspeed").text = Math.round(data.windspeed) + "(" + Math.round(data.windgust) + ")mph " + data.winddir;
@@ -498,11 +514,15 @@ inbox.onnewfile = () => {
       // Set the graph scale
       myGraph.setYRange(ymin, ymax);
       // Update the graph
-      myGraph.update(data.BGD);  
-      
-      processWeatherData(data.weather);
-      
-      processAirQuality(data.airQuality);
+      myGraph.update(data.BGD);
+      if (numWeatherDataPulls == 3) {
+        processWeatherData(data.weather);
+        processAirQuality(data.airQuality);
+        numWeatherDataPulls = 0;
+      } else {
+        processPrevWeatherPullDifTime(prevWeatherPullTime);
+        numWeatherDataPulls++;
+      }
     }
   } while (fileName);
   fs.unlinkSync('file.txt');
