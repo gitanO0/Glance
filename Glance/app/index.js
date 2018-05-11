@@ -31,7 +31,7 @@ let showAlertModal = true;
 
 let numPulls = 0;
 
-let numWeatherDataPulls = 3;  //initiize at 3 (15 minutes - 3 data pulls) to allow a first run of the weather process
+//let numWeatherDataPulls = 3;  //initiize at 3 (15 minutes - 3 data pulls) to allow a first run of the weather process
 let prevWeatherPullTime = null;
 
 let timeOut;
@@ -170,7 +170,9 @@ function processPrevWeatherPullDifTime(time) {
       document.getElementById("wxTime").style.fontWeight = "bold";
       console.log("bold");
     }
+    return lastUpdatedMinutes;
   }
+  return 0;
 }
 
 // Display the weather data received from the companion
@@ -223,22 +225,29 @@ function processWeatherData(data) {
       document.getElementById("weatherDesc").style.fontSize = 24;
     }
     
-    //dew point
-    document.getElementById("dewpoint").text = "dp" + data.dewpoint + "°";
+    //dew point temp spread
+    var td = (Math.round(data.temperature) - data.dewpoint);
+    document.getElementById("dewpoint").text = "td" + td + "°";
     console.log("prev dp: " + prevDP + ", curr dp: " + data.dewpoint)
     if (prevDP != 0) {
-      if (prevDP < data.dewpoint) {
+      if (prevDP < td) {
         document.getElementById("dpTrend").text = "+";    
-      } else if (prevDP > data.dewpoint) {
+      } else if (prevDP > td) {
         document.getElementById("dpTrend").text = "-"; 
       } else {
         document.getElementById("dpTrend").text = ""; 
       } 
     }
-    prevDP = data.dewpoint;
+    document.getElementById("dewpoint").style.fontWeight = "regular";
+    document.getElementById("dpTrend").style.fontWeight = "regular";
+    if (td < 6) {
+      document.getElementById("dewpoint").style.fontWeight = "bold";
+      document.getElementById("dpTrend").style.fontWeight = "bold";
+    }
+    prevDP = td;
     
     //UV
-    document.getElementById("uv").text = "uv" + data.uv;
+    document.getElementById("uv").text = "uv" + Math.round(data.uv);
     document.getElementById("uv").style.fontWeight = "regular";
     document.getElementById("uvTrend").style.fontWeight = "regular";
     if (data.uv > 8) {
@@ -515,14 +524,21 @@ inbox.onnewfile = () => {
       myGraph.setYRange(ymin, ymax);
       // Update the graph
       myGraph.update(data.BGD);
-      if (numWeatherDataPulls == 3) {
+      
+      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
+        processWeatherData(data.weather);
+        processAirQuality(data.airQuality);
+      }
+      
+      /*if (numWeatherDataPulls == 3) {
         processWeatherData(data.weather);
         processAirQuality(data.airQuality);
         numWeatherDataPulls = 0;
       } else {
         processPrevWeatherPullDifTime(prevWeatherPullTime);
         numWeatherDataPulls++;
-      }
+      }*/
+      
     }
   } while (fileName);
   fs.unlinkSync('file.txt');

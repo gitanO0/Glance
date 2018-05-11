@@ -37,7 +37,7 @@ function queryOpenWeather() {
           wxTime: data["current_observation"]["observation_epoch"]
         }
         // Send the weather data to the device
-        console.log(data["current_observation"]["observation_epoch"]);
+        console.log(JSON.stringify(data));
         return weather;
       });
   })

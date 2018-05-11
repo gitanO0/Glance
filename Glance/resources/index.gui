@@ -15,21 +15,21 @@
       <text id="date" x="82%" y="49%" text-anchor="end"></text> 
       
       <text id="temp" class="weather-text weather-color" x="40%" y="8%" text-anchor="end">--</text>
-      <text id="tempTrend" class="weatherTrend-text weather-color" x="37%" y="8%" text-anchor="start"></text>
+      <text id="tempTrend" class="weather-text weather-color" x="36.5%" y="8%" text-anchor="start"></text>
 
       <text id="hum" class="weather-text weather-color" x="58%" y="8%" text-anchor="end">--</text>
       <text id="humPercent" class="smallPercent-text weather-color" x="58.5%" y="6%" text-anchor="start">%</text>
-      <text id="humTrend" class="weatherTrend-text weather-color" x="63.5%" y="4%" text-anchor="start"></text>
+      <text id="humTrend" class="weather-text weather-color" x="63.5%" y="4%" text-anchor="start"></text>
       
       <text id="weatherDesc" class="weather-text weather-color" x="39%" y="17.5%" text-anchor="middle">--</text>
       
       <text id="windspeed" class="weather-text weather-color" x="39%" y="26%" text-anchor="middle">--</text>
       
-      <text id="dewpoint" class="weather-text weather-color" x="25%" y="36%" text-anchor="end">--</text>
-      <text id="dpTrend" class="weatherTrend-text weather-color" x="22%" y="36%" text-anchor="start"></text>
+      <text id="dewpoint" class="weather-text weather-color" x="24%" y="36%" text-anchor="end">--</text>
+      <text id="dpTrend" class="weather-text weather-color" x="20.5%" y="36%" text-anchor="start"></text>
       
-      <text id="uv" class="weather-text weather-color" x="47%" y="36%" text-anchor="end">--</text>
-      <text id="uvTrend" class="weatherTrend-text weather-color" x="47%" y="33%" text-anchor="start"></text>
+      <text id="uv" class="weather-text weather-color" x="45%" y="36%" text-anchor="end">--</text>
+      <text id="uvTrend" class="weather-text weather-color" x="45%" y="33%" text-anchor="start"></text>
       
       <text id="wxTime" class="weather-text weather-color wxtime-text" x="80%" y="36%" text-anchor="end">--</text> 
       
@@ -55,7 +55,7 @@
      <text id="heart" class="h2 status-text heart-color"  x="7%" y="97%" text-anchor="middle">--</text>
       
      <image class="image step-color" x="21%" y="78%" href="img/steps.png"/>
-     <text id="step" class="h2 status-text step-color"  x="28%" y="97%" text-anchor="middle">--</text>
+     <text id="step" class="h2 status-text step-color"  x="27%" y="97%" text-anchor="middle">--</text>
       
      <image id="status-image" class="image" x="87%" y="31%" href="img/refresh.png" pointer-events="visible"/>
       
