@@ -32,7 +32,7 @@ function queryOpenWeather() {
           windspeed: data["current_observation"]["wind_mph"],
           winddir: data["current_observation"]["wind_dir"],
           dewpoint: data["current_observation"]["dewpoint_f"],
-          uv: data["current_observation"]["UV"],
+          uv: data["current_observation"]["solarradiation"],
           raintoday: data["current_observation"]["precip_today_in"],
           wxTime: data["current_observation"]["observation_epoch"]
         }

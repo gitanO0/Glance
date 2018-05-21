@@ -112,6 +112,14 @@ function startMonitors() {
   
    document.getElementById("heart").text = JSON.stringify(data.heartRate);
    document.getElementById("step").text = stepCount;
+  
+   let floorCount = today.local.elevationGain;
+   document.getElementById("floors").text = floorCount + "f";
+   document.getElementById("floors").style.fontWeight = "regular";
+   if (floorCount > 8) {
+     document.getElementById("floors").style.fontWeight = "bold";
+   } 
+  
 }
 
 //minutes since last pull 
@@ -221,8 +229,10 @@ function processWeatherData(data) {
     document.getElementById("weatherDesc").text = capitalizeFirstLetter(data.weatherDesc);    
     if (document.getElementById("weatherDesc").text.length < 18) {
           document.getElementById("weatherDesc").style.fontSize = 27;
-    } else {
+    } else if (document.getElementById("weatherDesc").text.length < 23) {
       document.getElementById("weatherDesc").style.fontSize = 24;
+    } else {
+      document.getElementById("weatherDesc").style.fontSize = 17;
     }
     
     //dew point temp spread
@@ -246,29 +256,38 @@ function processWeatherData(data) {
     }
     prevDP = td;
     
-    //UV
-    document.getElementById("uv").text = "uv" + Math.round(data.uv);
-    document.getElementById("uv").style.fontWeight = "regular";
-    document.getElementById("uvTrend").style.fontWeight = "regular";
-    if (data.uv > 8) {
-      document.getElementById("uv").style.fontWeight = "bold";
-      document.getElementById("uvTrend").style.fontWeight = "bold";
+    //UV  (changed to solar radiation... will fix var names, etc... if decided to keep)
+    var sol = null;
+    if (data.uv == "--") {
+      sol == data.uv;
+    } else {
+      sol = (Math.round(data.uv * .1));
+      document.getElementById("uv").text = "s" + sol;
+      document.getElementById("uv").style.fontWeight = "regular";
+      document.getElementById("uvTrend").style.fontWeight = "regular";
+      if (sol > 65) {
+        document.getElementById("uv").style.fontWeight = "bold";
+        document.getElementById("uvTrend").style.fontWeight = "bold";
+      }
+      console.log("prev uv: " + prevUV + ", curr uv: " + data.uv)
+      if (prevUV != 0) {
+        if (prevUV < data.uv) {
+          document.getElementById("uvTrend").text = "+";    
+        } else if (prevUV > data.uv) {
+          document.getElementById("uvTrend").text = "-"; 
+        } else {
+          document.getElementById("uvTrend").text = ""; 
+        } 
+      }      
     }
-    console.log("prev uv: " + prevUV + ", curr uv: " + data.uv)
-    if (prevUV != 0) {
-      if (prevUV < data.uv) {
-        document.getElementById("uvTrend").text = "+";    
-      } else if (prevUV > data.uv) {
-        document.getElementById("uvTrend").text = "-"; 
-      } else {
-        document.getElementById("uvTrend").text = ""; 
-      } 
-    }
+
     prevUV = data.uv;    
     
     //raintoday
     if (data.raintoday == "0.00") {
       document.getElementById("raintoday").text = "rt0";
+    } else if (data.raintoday < 1) {
+      document.getElementById("raintoday").text = "r" + data.raintoday.substr(1);
     } else {
       document.getElementById("raintoday").text = "rt" + data.raintoday;  
     }
