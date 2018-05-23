@@ -116,7 +116,7 @@ function startMonitors() {
    let floorCount = today.local.elevationGain;
    document.getElementById("floors").text = floorCount + "f";
    document.getElementById("floors").style.fontWeight = "regular";
-   if (floorCount > 8) {
+   if (floorCount > 9) {
      document.getElementById("floors").style.fontWeight = "bold";
    } 
   
@@ -226,15 +226,19 @@ function processWeatherData(data) {
     prevHum = hum;
     
     //weather description
-    document.getElementById("weatherDesc").text = capitalizeFirstLetter(data.weatherDesc);    
-    if (document.getElementById("weatherDesc").text.length < 18) {
-          document.getElementById("weatherDesc").style.fontSize = 27;
-    } else if (document.getElementById("weatherDesc").text.length < 23) {
-      document.getElementById("weatherDesc").style.fontSize = 24;
+    if (data.weatherDesc == "") {
+      document.getElementById("weatherDesc").text = "-----"
     } else {
-      document.getElementById("weatherDesc").style.fontSize = 17;
+      document.getElementById("weatherDesc").text = capitalizeFirstLetter(data.weatherDesc);    
+      if (document.getElementById("weatherDesc").text.length < 18) {
+        document.getElementById("weatherDesc").style.fontSize = 27;
+      } else if (document.getElementById("weatherDesc").text.length < 23) {
+        document.getElementById("weatherDesc").style.fontSize = 24;
+      } else {
+        document.getElementById("weatherDesc").style.fontSize = 17;
+      }      
     }
-    
+
     //dew point temp spread
     var td = (Math.round(data.temperature) - data.dewpoint);
     document.getElementById("dewpoint").text = "td" + td + "°";
@@ -285,11 +289,11 @@ function processWeatherData(data) {
     
     //raintoday
     if (data.raintoday == "0.00") {
-      document.getElementById("raintoday").text = "rt0";
+      document.getElementById("raintoday").text = "r0";
     } else if (data.raintoday < 1) {
       document.getElementById("raintoday").text = "r" + data.raintoday.substr(1);
     } else {
-      document.getElementById("raintoday").text = "rt" + data.raintoday;  
+      document.getElementById("raintoday").text = "r" + data.raintoday;  
     }
     document.getElementById("raintoday").style.fontWeight = "regular";
     if (data.raintoday > .15) {
@@ -422,7 +426,7 @@ function processOneBg(data) {
       data.delta = mmol( data.delta ) 
     }
     
-    document.getElementById("bg").text = data.sgv
+    document.getElementById("bg").text = Math.round(data.sgv);
     document.getElementById("delta").text = data.delta + ' ' + data.units_hint
     totalSeconds = 0;
     setStatusImage('checked.png')
@@ -538,7 +542,7 @@ inbox.onnewfile = () => {
         data.BGD[CONST_COUNT].sgv = mgdl(data.BGD[CONST_COUNT].sgv)
       }
       
-      myGraph.setLowHigh(data.settings.lowThreshold, data.settings.highThreshold);
+      myGraph.setLowHigh(data.settings.lowThreshold, data.settings.highThreshold, 100);
       // Set the graph scale
       myGraph.setYRange(ymin, ymax);
       // Update the graph

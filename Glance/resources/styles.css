@@ -16,17 +16,10 @@
   font-size:80;
 }
 
-#colon1{
+.colon{
   font-family: SevilleSharp-Regular;
   text-length:20;
-  fill: #808080;
-  font-size:70;
-}
-
-#colon2{
-  font-family: SevilleSharp-Regular;
-  text-length:20;
-  fill: #808080;
+  fill: #206040;
   font-size:70;
 }
 
@@ -138,6 +131,8 @@
   fill: #ffffb3;
 }
 
-.floors-color {
+.floor-text {
+  font-family: SevilleSharp;
+  font-size:26;
   fill: #df80ff;
 }

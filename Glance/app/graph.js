@@ -25,6 +25,7 @@ export default class Graph {
  
    this._tHighLine = this._id.getElementById("tHigh");
    this._tLowLine = this._id.getElementById("tLow");
+   this._tTargetLine = this._id.getElementById("tTarget");
    
    this._defaultYmin = 40;
    this._defaultYmax = 400;
@@ -36,9 +37,10 @@ export default class Graph {
    this._id.y = y;
  }
   
- setLowHigh(low,high){
+ setLowHigh(low,high,target){
    this._tLow = low;
    this._tHigh = high;
+   this._tTarget = target;
  }
   
  setSize(w,h){
@@ -87,8 +89,12 @@ export default class Graph {
    
    this._tHighLine.y1 = this._id.height - ((this._tHigh-this._ymin) / this._yscale);
    this._tHighLine.y2 = this._id.height - ((this._tHigh-this._ymin) / this._yscale);
+    
    this._tLowLine.y1 = this._id.height - ((this._tLow-this._ymin) / this._yscale);
    this._tLowLine.y2 = this._id.height - ((this._tLow-this._ymin) / this._yscale);
+   
+   this._tTargetLine.y1 = this._id.height - ((this._tTarget-this._ymin) / this._yscale);
+   this._tTargetLine.y2 = this._id.height - ((this._tTarget-this._ymin) / this._yscale);
    
     
    for (var index = 0; index < this._vals.length; index++) {
