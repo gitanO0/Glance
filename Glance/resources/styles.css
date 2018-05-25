@@ -6,7 +6,7 @@
   font-family: SevilleSharp-Regular;
   text-length: 65;
   fill: #b3b3b3;
-  font-size:90;
+  font-size:80;
 }
 
 #minutes{
@@ -135,4 +135,11 @@
   font-family: SevilleSharp;
   font-size:26;
   fill: #df80ff;
+}
+
+.river-text {
+  text-length: 6;
+  font-family: SevilleSharp-Bold;
+  font-size:24;
+  fill: #8080ff;
 }

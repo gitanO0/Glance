@@ -42,6 +42,10 @@ function mySettings(props) {
         label="AirNow Zip Code"
         settingsKey="anZip"
         />
+        <TextInput
+        label="USGS River Guage ID"
+        settingsKey="guageID"
+        />
     </Page>
   );
 }

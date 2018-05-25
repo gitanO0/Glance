@@ -11,12 +11,13 @@ import { geolocation } from "geolocation";
 var URL = null;
 var weatherURL = null;
 var airQualityURL = null;
+var USGSRiverURL = null;
 //WeatheyAPI connection
 var API_KEY = null;
 var ENDPOINT = null;
 
 // Fetch the weather from OpenWeather
-function queryOpenWeather() {
+function queryWUnderground() {
   let weatherURL = getWeatherEndPoint();
   console.log(weatherURL);
   return fetch(weatherURL)
@@ -67,6 +68,27 @@ function queryAirNow() {
   .catch(function (err) {
     console.log(getAirNowEndPoint());
     console.log("Error getting air quality" + err);
+  });
+}
+
+function queryUSGSRiver() {
+  let USGSRiverURL = getUSGSRiverEndPoint();
+  console.log(USGSRiverURL);
+  return fetch(USGSRiverURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       var riverGuage = {
+         stage: data["value"]["timeSeries"][0]["values"][0]["value"][0]["value"]
+        }
+        // Send the river guage data to the device
+        return riverGuage;
+      });
+  })
+  .catch(function (err) {
+    console.log(getUSGSRiverEndPoint());
+    console.log("Error getting river guage" + err);
   });
 }
 
@@ -136,12 +158,16 @@ function returnData(data) {
 
 function formatReturnData() {
     let weatherPromise = new Promise(function(resolve, reject) {
-       resolve( queryOpenWeather() );
+       resolve( queryWUnderground() );
      });
   
      let airQualityPromise = new Promise(function(resolve, reject) {
        resolve( queryAirNow() );
      });
+  
+     let riverGuagePromise = new Promise(function(resolve, reject) {
+       resolve( queryUSGSRiver() );
+     });  
   
     let BGDPromise = new Promise(function(resolve, reject) {
       resolve( queryBGD() );
@@ -161,11 +187,12 @@ function formatReturnData() {
      lowThreshold = 70
     }
       
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise]).then(function(values) {
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGuagePromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
         'airQuality' : values[2],
+        'riverGuage' : values[3],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
@@ -233,6 +260,12 @@ function getAirNowEndPoint() {
   if (getSettings('anAPI').name && getSettings('anZip').name){
     return "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=" + getSettings('anZip').name + "&distance=10&API_KEY=" + getSettings('anAPI').name;
     /*return "http://docs.airnowapi.org/QueryTool/ajax/executeWebServiceUrl?serviceId=ObservationAQ&url=http%3A%2F%2Fwww.airnowapi.org%2Faq%2Fobservation%2FzipCode%2Fcurrent%2F%3Fformat%3Dapplication%2Fjson%26zipCode%3D" + getSettings('anZip').name + "%26distance%3D10%26API_KEY%3D" + getSettings('anAPI').name;*/
+  }
+}
+
+function getUSGSRiverEndPoint() {
+  if (getSettings('guageID')){
+    return "https://waterservices.usgs.gov/nwis/iv/?format=json&parameterCd=00065&sites=" + getSettings('guageID').name;
   }
 }
 

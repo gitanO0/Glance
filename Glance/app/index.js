@@ -209,7 +209,7 @@ function processWeatherData(data) {
     document.getElementById("hum").text = "h" + hum;   
     document.getElementById("hum").style.fontWeight = "regular";    
     document.getElementById("humTrend").style.fontWeight = "regular";
-    if (hum < 15) {
+    if (hum < 12) {
       document.getElementById("hum").style.fontWeight = "bold";
       document.getElementById("humTrend").style.fontWeight = "bold";
     }
@@ -240,7 +240,7 @@ function processWeatherData(data) {
     }
 
     //dew point temp spread
-    var td = (Math.round(data.temperature) - data.dewpoint);
+    var td = (Math.round(data.temperature) - Math.round(data.dewpoint));
     document.getElementById("dewpoint").text = "td" + td + "°";
     console.log("prev dp: " + prevDP + ", curr dp: " + data.dewpoint)
     if (prevDP != 0) {
@@ -254,10 +254,10 @@ function processWeatherData(data) {
     }
     document.getElementById("dewpoint").style.fontWeight = "regular";
     document.getElementById("dpTrend").style.fontWeight = "regular";
-    if (td < 6) {
+    if (td < 6 || td > 54) {
       document.getElementById("dewpoint").style.fontWeight = "bold";
       document.getElementById("dpTrend").style.fontWeight = "bold";
-    }
+    } 
     prevDP = td;
     
     //UV  (changed to solar radiation... will fix var names, etc... if decided to keep)
@@ -269,7 +269,7 @@ function processWeatherData(data) {
       document.getElementById("uv").text = "s" + sol;
       document.getElementById("uv").style.fontWeight = "regular";
       document.getElementById("uvTrend").style.fontWeight = "regular";
-      if (sol > 65) {
+      if (sol > 79) {
         document.getElementById("uv").style.fontWeight = "bold";
         document.getElementById("uvTrend").style.fontWeight = "bold";
       }
@@ -290,6 +290,8 @@ function processWeatherData(data) {
     //raintoday
     if (data.raintoday == "0.00") {
       document.getElementById("raintoday").text = "r0";
+    } else if (data.raintoday =="") {
+      document.getElementById("raintoday").text = "r--";
     } else if (data.raintoday < 1) {
       document.getElementById("raintoday").text = "r" + data.raintoday.substr(1);
     } else {
@@ -330,7 +332,7 @@ function processWeatherData(data) {
       var cool = "#adebeb";
       document.getElementById("temp").style.fill = cool;
       document.getElementById("tempTrend").style.fill = cool;
-      document.getElementById("hum").style.fill = cool;
+      document.getElementById("hum").style.fill = cool;A
       document.getElementById("humPercent").style.fill = cool;
       document.getElementById("humTrend").style.fill = cool;
       document.getElementById("weatherDesc").style.fill = cool;
@@ -407,6 +409,13 @@ function processAirQuality(data) {
     } else {
         document.getElementById("pm25Circle").style.fill = "#7E0023";
     }
+  }
+}
+
+function processRiverGuage(data) {
+  document.getElementById("riverStage").text = data.stage + "ft";
+  if (data.stage > 6){
+    document.getElementById("riverStage").style.fill = "#4d4dff";
   }
 }
 
@@ -551,17 +560,8 @@ inbox.onnewfile = () => {
       if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
         processWeatherData(data.weather);
         processAirQuality(data.airQuality);
+        processRiverGuage(data.riverGuage);
       }
-      
-      /*if (numWeatherDataPulls == 3) {
-        processWeatherData(data.weather);
-        processAirQuality(data.airQuality);
-        numWeatherDataPulls = 0;
-      } else {
-        processPrevWeatherPullDifTime(prevWeatherPullTime);
-        numWeatherDataPulls++;
-      }*/
-      
     }
   } while (fileName);
   fs.unlinkSync('file.txt');
