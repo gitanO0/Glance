@@ -290,7 +290,7 @@ function processWeatherData(data) {
     //raintoday
     if (data.raintoday == "0.00") {
       document.getElementById("raintoday").text = "r0";
-    } else if (data.raintoday =="") {
+    } else if (data.raintoday =="" || data.raintoday == "-9999.00") {
       document.getElementById("raintoday").text = "r--";
     } else if (data.raintoday < 1) {
       document.getElementById("raintoday").text = "r" + data.raintoday.substr(1);
@@ -332,7 +332,7 @@ function processWeatherData(data) {
       var cool = "#adebeb";
       document.getElementById("temp").style.fill = cool;
       document.getElementById("tempTrend").style.fill = cool;
-      document.getElementById("hum").style.fill = cool;A
+      document.getElementById("hum").style.fill = cool;
       document.getElementById("humPercent").style.fill = cool;
       document.getElementById("humTrend").style.fill = cool;
       document.getElementById("weatherDesc").style.fill = cool;
@@ -417,6 +417,11 @@ function processRiverGuage(data) {
   if (data.stage > 6){
     document.getElementById("riverStage").style.fill = "#4d4dff";
   }
+}
+
+function processIOB(data) {
+  console.log("iob is: " + JSON.stringify(data));
+  document.getElementById("iob").text = "iob: " + data.iob;
 }
 
 // Display the  data received from the companion
@@ -562,6 +567,8 @@ inbox.onnewfile = () => {
         processAirQuality(data.airQuality);
         processRiverGuage(data.riverGuage);
       }
+      
+      processIOB(data.iob);
     }
   } while (fileName);
   fs.unlinkSync('file.txt');

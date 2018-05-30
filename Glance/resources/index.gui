@@ -26,7 +26,7 @@
       <text id="windspeed" class="weather-text weather-color" x="39%" y="26%" text-anchor="middle">--</text>
       
       <text id="dewpoint" class="weather-text weather-color" x="23%" y="36%" text-anchor="end">--</text>
-      <text id="dpTrend" class="weather-text weather-color" x="20%" y="37%" text-anchor="start"></text>
+      <text id="dpTrend" class="weather-text weather-color" x="19.5%" y="37%" text-anchor="start"></text>
       
       <text id="uv" class="weather-text weather-color" x="43%" y="36%" text-anchor="end">--</text>
       <text id="uvTrend" class="weather-text weather-color" x="43%" y="34%" text-anchor="start"></text>
@@ -58,8 +58,10 @@
      <text id="step" class="h2 status-text step-color"  x="25%" y="97%" text-anchor="middle">--</text>
       
      <text id="floors" class="floor-text"  x="86%" y="72%" text-anchor="end">--</text>
+      
+     <text id="iob" class="iob-text"  x="28%" y="77%" text-anchor="start">--</text>
      
-     <text id="riverStage" class="river-text"  x="4%" y="78%" text-anchor="start">--</text>
+     <text id="riverStage" class="river-text"  x="1%" y="77%" text-anchor="start">--</text>
       
      <image id="status-image" class="image" x="86%" y="32%" href="img/refresh.png" pointer-events="visible"/>
       

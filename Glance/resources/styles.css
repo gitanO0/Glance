@@ -143,3 +143,10 @@
   font-size:24;
   fill: #8080ff;
 }
+
+.iob-text {
+  text-length: 6;
+  font-family: SevilleSharp-Bold;
+  font-size:24;
+  fill: #ff751a;
+}

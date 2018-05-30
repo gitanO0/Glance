@@ -98,7 +98,11 @@ export default class Graph {
    
     
    for (var index = 0; index < this._vals.length; index++) {
-   
+     // when first starting up a new sensor, the web service won't send back data for the bg values...
+     // need to set those bg circle objects to a bogus value and not just undefined.
+     if (this._vals[index].sgv === undefined) {
+       this._vals[index].sgv = -1;
+     }
      //console.log(`V${index}: ${v[index].sgv}`);
      
      //console.log("SGV" + index + ": " + v[index].sgv + " TIME: " + v[index].date);
@@ -110,6 +114,8 @@ export default class Graph {
      
      if (v[index].sgv > this._tHigh) {
        this._vals[index].style.fill = "orange";
+     } else if (v[index].sgv < 0) {
+       this._vals[index].style.fill = "#ad33ff";
      } else if (v[index].sgv < this._tLow) {
        this._vals[index].style.fill = "#cc0000";
      }    

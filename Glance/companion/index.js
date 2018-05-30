@@ -92,6 +92,25 @@ function queryUSGSRiver() {
   });
 }
 
+function queryIOB() {
+  let iobURL = "http://127.0.0.1:17580/pebble";
+  console.log(iobURL);
+  return fetch(iobURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       var iob = {
+         iob: data["bgs"][0]["iob"]
+        }
+        // Send the iob data to the device
+        return iob;
+      });
+  })
+  .catch(function (err) {
+    console.log("Error getting iob" + err);
+  });
+}
 
 function queryBGD() {
   let url = getSgvURL()
@@ -169,6 +188,10 @@ function formatReturnData() {
        resolve( queryUSGSRiver() );
      });  
   
+     let IOBPromise = new Promise(function(resolve, reject) {
+       resolve( queryIOB() );
+     });  
+  
     let BGDPromise = new Promise(function(resolve, reject) {
       resolve( queryBGD() );
     });
@@ -187,12 +210,13 @@ function formatReturnData() {
      lowThreshold = 70
     }
       
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGuagePromise]).then(function(values) {
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGuagePromise, IOBPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
         'airQuality' : values[2],
         'riverGuage' : values[3],
+        'iob' : values[4],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
@@ -246,7 +270,7 @@ function getSgvURL() {
     return getSettings('endpoint').name+"?count=24"
   } else {
     // Default xDrip web service 
-    return  "http://127.0.0.1:17580/sgv.json"
+    return  "http://127.0.0.1:17580/sgv.json?count=24"
   }
 }
 
