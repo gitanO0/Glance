@@ -59,7 +59,7 @@
       
      <text id="floors" class="floor-text"  x="86%" y="72%" text-anchor="end">--</text>
       
-     <text id="iob" class="iob-text"  x="28%" y="77%" text-anchor="start">--</text>
+     <text id="iob" class="iob-text"  x="27%" y="77%" text-anchor="start">--</text>
      
      <text id="riverStage" class="river-text"  x="1%" y="77%" text-anchor="start">--</text>
       

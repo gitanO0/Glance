@@ -112,15 +112,15 @@
 }
 
 .companionStatus {
-  fill:#ff3333;
+  fill:#595959;
 }
 
 .o3 {
-  fill:#ff3333;
+  fill:#595959;
 }
 
 .pm25 {
-  fill:#ff3333;
+  fill:#595959;
 }
 
 .heart-color {
@@ -139,14 +139,14 @@
 
 .river-text {
   text-length: 6;
-  font-family: SevilleSharp-Bold;
-  font-size:24;
+  font-family: SevilleSharp;
+  font-size:25;
   fill: #8080ff;
 }
 
 .iob-text {
-  text-length: 6;
-  font-family: SevilleSharp-Bold;
-  font-size:24;
-  fill: #ff751a;
+  text-length: 10;
+  font-family: SevilleSharp;
+  font-size:25;
+  fill: #ccccff;
 }

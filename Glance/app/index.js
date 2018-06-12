@@ -158,11 +158,20 @@ function fetchCompaionData(cmd) {
     document.getElementById("companionStatusCircle").style.fill = "#00ff00";
     // Send a command to the companion
     messaging.peerSocket.send({
-      command: cmd
+      command: cmd,
+      heart: heartRate.heartRate,
+      steps: today.local.steps
     });
   } else {
-    document.getElementById("companionStatusCircle").style.fill = "#ff3333";
+    document.getElementById("companionStatusCircle").style.fill = "#ff4d4d";
   }
+}
+
+// Listen for the onerror event
+messaging.peerSocket.onerror = function(err) {
+  // Handle any errors
+  console.log("Connection error: " + err.code + " - " + err.message);
+  document.getElementById("companionStatusCircle").style.fill = "#e60000";
 }
 
 function processPrevWeatherPullDifTime(time) {
@@ -174,9 +183,8 @@ function processPrevWeatherPullDifTime(time) {
     var lastUpdatedMinutes = Math.round(diff / 60)
     document.getElementById("wxTime").text = "+" + lastUpdatedMinutes;
     document.getElementById("wxTime").style.fontWeight = "regular";
-    if (lastUpdatedMinutes > 19) {
+    if (lastUpdatedMinutes > 24) {
       document.getElementById("wxTime").style.fontWeight = "bold";
-      console.log("bold");
     }
     return lastUpdatedMinutes;
   }
@@ -209,9 +217,11 @@ function processWeatherData(data) {
     document.getElementById("hum").text = "h" + hum;   
     document.getElementById("hum").style.fontWeight = "regular";    
     document.getElementById("humTrend").style.fontWeight = "regular";
+    document.getElementById("humPercent").style.fontWeight = "regular";
     if (hum < 12) {
       document.getElementById("hum").style.fontWeight = "bold";
       document.getElementById("humTrend").style.fontWeight = "bold";
+      document.getElementById("humPercent").style.fontWeight = "bold";
     }
     console.log("prev hum: " + prevHum + ", curr hum: " + hum)
     if (prevHum != 0) {
@@ -284,7 +294,6 @@ function processWeatherData(data) {
         } 
       }      
     }
-
     prevUV = data.uv;    
     
     //raintoday
@@ -312,6 +321,7 @@ function processWeatherData(data) {
       document.getElementById("windspeed").style.fontWeight = "bold";
     } else
     
+    // weather data color based on temp
     if (data.temperature < "32") {
       var cold = "#99bbff";
       document.getElementById("temp").style.fill = cold;
@@ -360,7 +370,7 @@ function processWeatherData(data) {
       document.getElementById("uv").style.fill = warm;
       document.getElementById("raintoday").style.fill = warm;
     }
-    else {
+    else if (data.temperature < "100") {
       var hot = "#ffb399";
       document.getElementById("temp").style.fill = hot;
       document.getElementById("tempTrend").style.fill = hot;
@@ -376,6 +386,21 @@ function processWeatherData(data) {
       document.getElementById("uv").style.fill = hot;
       document.getElementById("raintoday").style.fill = hot;
     } 
+  } else if (data.temperature > "99") {
+      var hell = "#ff4d4d";
+      document.getElementById("temp").style.fill = hell;
+      document.getElementById("tempTrend").style.fill = hell;
+      document.getElementById("hum").style.fill = hell;
+      document.getElementById("humPercent").style.fill = hell;
+      document.getElementById("humTrend").style.fill = hell;
+      document.getElementById("weatherDesc").style.fill = hell;
+      document.getElementById("windspeed").style.fill = hell;
+      document.getElementById("dewpoint").style.fill = hell;
+      document.getElementById("dpTrend").style.fill = hell;
+      document.getElementById("uvTrend").style.fill = hell;      
+      document.getElementById("wxTime").style.fill = hell;
+      document.getElementById("uv").style.fill = hell;
+      document.getElementById("raintoday").style.fill = hell;    
   }
 }
 
@@ -392,8 +417,10 @@ function processAirQuality(data) {
         document.getElementById("o3Circle").style.fill = "#FF0000";
     } else if (data.O3 < 301) {
         document.getElementById("o3Circle").style.fill = "#99004C";
-    } else {
+    } else if (data.O3 > 499) {
         document.getElementById("o3Circle").style.fill = "#7E0023";
+    } else {
+      document.getElementById("o3Circle").style.fill = "#595959"; 
     }
 
     if (data.PM2_5 < 51) {
@@ -406,22 +433,41 @@ function processAirQuality(data) {
         document.getElementById("pm25Circle").style.fill = "#FF0000";
     } else if (data.PM2_5 < 301) {
         document.getElementById("pm25Circle").style.fill = "#99004C";
-    } else {
+    } else if (data.PM2_5 > 499) {
         document.getElementById("pm25Circle").style.fill = "#7E0023";
+    } else {
+      document.getElementById("pm25Circle").style.fill = "#595959";
     }
+  } else {
+    document.getElementById("pm25Circle").style.fill = "#595959";
+    document.getElementById("o3Circle").style.fill = "#595959";
   }
 }
 
-function processRiverGuage(data) {
+function processRiverGauge(data) {
   document.getElementById("riverStage").text = data.stage + "ft";
   if (data.stage > 6){
     document.getElementById("riverStage").style.fill = "#4d4dff";
+  } 
+  if (data.stage > 2) {
+    document.getElementById("riverStage").style.fontWeight = "bold";            
   }
 }
 
 function processIOB(data) {
   console.log("iob is: " + JSON.stringify(data));
-  document.getElementById("iob").text = "iob: " + data.iob;
+  document.getElementById("iob").style.fontWeight = "regular";
+  if (data.iob === undefined) {
+    document.getElementById("iob").text = "iob NA";
+  } else if (data.iob == "0.00" || data.iob == 0) {
+    document.getElementById("iob").text = "iob 0";
+  } else if (data.iob > 0) {
+    document.getElementById("iob").style.fontWeight = "bold";    
+    document.getElementById("iob").text = "iob " + data.iob;
+  }
+  else {
+    document.getElementById("iob").text = "--";
+  }
 }
 
 // Display the  data received from the companion
@@ -461,7 +507,6 @@ function processOneBg(data) {
 messaging.peerSocket.onopen = function() {
   fetchCompaionData();
 }
-
 
 // Event occurs when new file(s) are received
 inbox.onnewfile = () => {
@@ -562,17 +607,27 @@ inbox.onnewfile = () => {
       // Update the graph
       myGraph.update(data.BGD);
       
-      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
-        processWeatherData(data.weather);
-        processAirQuality(data.airQuality);
-        processRiverGuage(data.riverGuage);
+      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 19) {
+        if (data.weather) {
+          processWeatherData(data.weather);    
+        }
+        if (data.airQuality) {
+          processAirQuality(data.airQuality);  
+        }
+        if (data.riverGauge) {
+          processRiverGauge(data.riverGauge);  
+        }
       }
       
-      processIOB(data.iob);
+      if (data.iob) {
+        processIOB(data.iob);    
+      }
+      document.getElementById("companionStatusCircle").style.fill = "#3385ff";
     }
   } while (fileName);
-  fs.unlinkSync('file.txt');
-  document.getElementById("companionStatusCircle").style.fill = "#3385ff";
+  //if (fileName) {
+  //  fs.unlinkSync('file.txt');
+  //}
 };
 
 //----------------------------------------------------------

@@ -6,7 +6,6 @@ import { settingsStorage } from "settings";
 import { me } from "companion";
 import { geolocation } from "geolocation";
 
-
 // // default URL pointing at xDrip Plus endpoint
 var URL = null;
 var weatherURL = null;
@@ -57,10 +56,22 @@ function queryAirNow() {
      return response.json()
       .then(function(data) {
        console.log(JSON.stringify(data));
-       var airQuality = {
-         O3: data[0]["AQI"],
-         PM2_5: data[1]["AQI"]
-        }
+       if (data[0]["ParameterName"] == "O3") {
+         if (data[1]) {
+           var airQuality = {
+             O3: data[0]["AQI"],
+             PM2_5: data[1]["AQI"]
+           }    
+         } else {
+           var airQuality = {
+             O3: data[0]["AQI"]
+           }   
+         }    
+       } else if (data[0]["ParameterName"] == "PM2.5") {
+         var airQuality = {
+             PM2_5: data[1]["AQI"]
+         }               
+       }
         // Send the air quality data to the device
         return airQuality;
       });
@@ -79,21 +90,21 @@ function queryUSGSRiver() {
      return response.json()
       .then(function(data) {
        console.log(JSON.stringify(data));
-       var riverGuage = {
+       var riverGauge = {
          stage: data["value"]["timeSeries"][0]["values"][0]["value"][0]["value"]
         }
-        // Send the river guage data to the device
-        return riverGuage;
+        // Send the river gauge data to the device
+        return riverGauge;
       });
   })
   .catch(function (err) {
     console.log(getUSGSRiverEndPoint());
-    console.log("Error getting river guage" + err);
+    console.log("Error getting river gauge" + err);
   });
 }
 
 function queryIOB() {
-  let iobURL = "http://127.0.0.1:17580/pebble";
+  let iobURL = "https://gitanons.azurewebsites.net/pebble";
   console.log(iobURL);
   return fetch(iobURL)
   .then(function (response) {
@@ -111,6 +122,24 @@ function queryIOB() {
     console.log("Error getting iob" + err);
   });
 }
+
+function sendSensorDataToXdrip(data) {
+  let sendSensorsURL = "http://127.0.0.1:17580/sgv.json?heart=" + data.heart + "&steps=" + data.steps;
+  console.log(sendSensorsURL);
+  return fetch(sendSensorsURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       // this query sends heart and steps data to the phone to be shown in xdrip+.  
+       //There is no meaningful return value back to this device.
+      });
+  })
+  .catch(function (err) {
+    console.log("Error sending heart and steps data" + err);
+  });
+}
+
 
 function queryBGD() {
   let url = getSgvURL()
@@ -172,7 +201,6 @@ function queryBGD() {
 function returnData(data) {  
   const myFileInfo = encode(data);
   outbox.enqueue('file.txt', myFileInfo)
-   
 }
 
 function formatReturnData() {
@@ -184,13 +212,13 @@ function formatReturnData() {
        resolve( queryAirNow() );
      });
   
-     let riverGuagePromise = new Promise(function(resolve, reject) {
+     let riverGaugePromise = new Promise(function(resolve, reject) {
        resolve( queryUSGSRiver() );
      });  
   
      let IOBPromise = new Promise(function(resolve, reject) {
        resolve( queryIOB() );
-     });  
+     });    
   
     let BGDPromise = new Promise(function(resolve, reject) {
       resolve( queryBGD() );
@@ -210,12 +238,12 @@ function formatReturnData() {
      lowThreshold = 70
     }
       
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGuagePromise, IOBPromise]).then(function(values) {
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGaugePromise, IOBPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
         'airQuality' : values[2],
-        'riverGuage' : values[3],
+        'riverGauge' : values[3],
         'iob' : values[4],
         'settings': {
           'bgColor': getSettings('bgColor'),
@@ -232,7 +260,10 @@ function formatReturnData() {
 // Listen for messages from the device
 messaging.peerSocket.onmessage = function(evt) {
   if (evt.data) {
-    formatReturnData()
+    formatReturnData();
+    
+    console.log(JSON.stringify(evt.data));
+    sendSensorDataToXdrip(evt.data);
   }
 }
 
@@ -267,10 +298,10 @@ function getSettings(key) {
 
 function getSgvURL() {
   if(getSettings('endpoint').name) {
-    return getSettings('endpoint').name+"?count=24"
+    return getSettings('endpoint').name+"?count=24&brief_mode=Y"
   } else {
     // Default xDrip web service 
-    return  "http://127.0.0.1:17580/sgv.json?count=24"
+    return  "http://127.0.0.1:17580/sgv.json?count=24&brief_mode=Y"
   }
 }
 
@@ -283,7 +314,6 @@ function getWeatherEndPoint() {
 function getAirNowEndPoint() {
   if (getSettings('anAPI').name && getSettings('anZip').name){
     return "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=" + getSettings('anZip').name + "&distance=10&API_KEY=" + getSettings('anAPI').name;
-    /*return "http://docs.airnowapi.org/QueryTool/ajax/executeWebServiceUrl?serviceId=ObservationAQ&url=http%3A%2F%2Fwww.airnowapi.org%2Faq%2Fobservation%2FzipCode%2Fcurrent%2F%3Fformat%3Dapplication%2Fjson%26zipCode%3D" + getSettings('anZip').name + "%26distance%3D10%26API_KEY%3D" + getSettings('anAPI').name;*/
   }
 }
 

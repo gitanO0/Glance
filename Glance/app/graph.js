@@ -123,8 +123,6 @@ export default class Graph {
        this._vals[index].style.fill = "#4d94ff";
      }
    }
-   
-   
  }
   
 };
