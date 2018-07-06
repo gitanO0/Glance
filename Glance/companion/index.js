@@ -43,7 +43,7 @@ function queryWUnderground() {
   })
   .catch(function (err) {
     //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
-    console.log(getWeatherEndPoint());
+    //console.log(getWeatherEndPoint());
     console.log("Error getting weather" + err);
   });
 }
@@ -77,7 +77,7 @@ function queryAirNow() {
       });
   })
   .catch(function (err) {
-    console.log(getAirNowEndPoint());
+    //console.log(getAirNowEndPoint());
     console.log("Error getting air quality" + err);
   });
 }
@@ -98,8 +98,30 @@ function queryUSGSRiver() {
       });
   })
   .catch(function (err) {
-    console.log(getUSGSRiverEndPoint());
+    //console.log(getUSGSRiverEndPoint());
     console.log("Error getting river gauge" + err);
+  });
+}
+
+function queryWaterTemp() {
+  let waterTempURL = getWaterTempEndPoint();
+  console.log(waterTempURL);
+  return fetch(waterTempURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       var waterTemp = {
+         airTemp: data["features"][0]["attributes"]["tmdb_f"],
+         waterTemp: data["features"][0]["attributes"]["sst1_f"]
+        }
+        // Send the water/air temp data to the device
+        return waterTemp;
+      });
+  })
+  .catch(function (err) {
+    //console.log(getSdWaterTempEndPoint());
+    console.log("Error getting water_air temp" + err);
   });
 }
 
@@ -179,6 +201,9 @@ function queryBGD() {
         }
         
         data.forEach(function(bg, index){
+           if (bg.sgv === undefined) {
+             bg.sgv = 0;
+           }
            bloodSugars.push({
              sgv: bg.sgv,
              delta: ((Math.round(bg.delta)) ? Math.round(bg.delta) : delta),
@@ -214,7 +239,11 @@ function formatReturnData() {
   
      let riverGaugePromise = new Promise(function(resolve, reject) {
        resolve( queryUSGSRiver() );
-     });  
+     }); 
+  
+     let WaterTempPromise = new Promise(function(resolve, reject) {
+       resolve( queryWaterTemp() );
+     }); 
   
      let IOBPromise = new Promise(function(resolve, reject) {
        resolve( queryIOB() );
@@ -238,13 +267,14 @@ function formatReturnData() {
      lowThreshold = 70
     }
       
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGaugePromise, IOBPromise]).then(function(values) {
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGaugePromise, IOBPromise, WaterTempPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
         'airQuality' : values[2],
         'riverGauge' : values[3],
         'iob' : values[4],
+        'waterAirInfo' : values[5],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
@@ -252,6 +282,7 @@ function formatReturnData() {
           'timeFormat' : getSettings('timeFormat'),
         }
       }
+      //console.log(JSON.stringify(dataToSend));
       returnData(dataToSend)
     });
   }
@@ -266,9 +297,6 @@ messaging.peerSocket.onmessage = function(evt) {
     sendSensorDataToXdrip(evt.data);
   }
 }
-
-
-
 
 // Listen for the onerror event
 messaging.peerSocket.onerror = function(err) {
@@ -318,8 +346,14 @@ function getAirNowEndPoint() {
 }
 
 function getUSGSRiverEndPoint() {
-  if (getSettings('guageID')){
-    return "https://waterservices.usgs.gov/nwis/iv/?format=json&parameterCd=00065&sites=" + getSettings('guageID').name;
+  if (getSettings('gaugeID')){
+    return "https://waterservices.usgs.gov/nwis/iv/?format=json&parameterCd=00065&sites=" + getSettings('gaugeID').name;
+  }
+}
+
+function getWaterTempEndPoint() {
+  if (getSettings('WaterTempStationID')){
+    return "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/2/query?where=locid%3D%27" + getSettings('WaterTempStationID').name.toUpperCase() + "%27+AND+projmins%3D0&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=sst1_f%2Ctmdb_f%2Cstarttime&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentsOnly=false&datumTransformation=&parameterValues=&rangeValues=&f=pjson";
   }
 }
 

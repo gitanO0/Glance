@@ -43,8 +43,12 @@ function mySettings(props) {
         settingsKey="anZip"
         />
         <TextInput
-        label="USGS River Guage ID"
-        settingsKey="guageID"
+        label="USGS River Gauge ID"
+        settingsKey="gaugeID"
+        />    
+        <TextInput
+        label="Air & Water Temp Station"
+        settingsKey="WaterTempStationID"
         />
     </Page>
   );

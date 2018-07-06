@@ -19,8 +19,8 @@
 .colon{
   font-family: SevilleSharp-Regular;
   text-length:20;
-  fill: #206040;
-  font-size:70;
+  fill: #79d2a6;
+  font-size:60;
 }
 
 #seconds {
@@ -132,16 +132,17 @@
 }
 
 .floor-text {
+  text-length: 4;
   font-family: SevilleSharp;
   font-size:26;
   fill: #df80ff;
 }
 
 .river-text {
-  text-length: 6;
+  text-length: 8;
   font-family: SevilleSharp;
-  font-size:25;
-  fill: #8080ff;
+  font-size:28;
+  fill: #9999ff;
 }
 
 .iob-text {

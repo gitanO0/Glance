@@ -57,11 +57,11 @@
      <image class="image step-color" x="20%" y="79%" href="img/steps.png"/>
      <text id="step" class="h2 status-text step-color"  x="25%" y="97%" text-anchor="middle">--</text>
       
-     <text id="floors" class="floor-text"  x="86%" y="72%" text-anchor="end">--</text>
+     <text id="floors" class="floor-text"  x="87%" y="72%" text-anchor="end">--</text>
       
-     <text id="iob" class="iob-text"  x="27%" y="77%" text-anchor="start">--</text>
+     <text id="iob" class="iob-text"  x="34%" y="77%" text-anchor="start">--</text>
      
-     <text id="riverStage" class="river-text"  x="1%" y="77%" text-anchor="start">--</text>
+     <text id="riverStage" class="river-text"  x=".5%" y="78%" text-anchor="start">--</text>
       
      <image id="status-image" class="image" x="86%" y="32%" href="img/refresh.png" pointer-events="visible"/>
       

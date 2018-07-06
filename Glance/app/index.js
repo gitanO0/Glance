@@ -36,26 +36,30 @@ let prevWeatherPullTime = null;
 
 let timeOut;
 // Init 
-setTime() 
-setDate()
-setBattery()
-startMonitors() 
+setTime(); 
+setDate();
+setBattery();
+startMonitors();
 
 // The updater is used to update the screen every 5 SECONDS 
 function updater() {
-  //setTime()  //no need for the "settime" process to run after the init anymore due to implementaion of clock class
-  //setDate()  //moved to the 5 min updater to reduce processing cycles
-  setBattery()
-  startMonitors()
-  addSecond()
+  setBattery();
+  startMonitors();
+  addSecond();
 }
-setInterval(updater, 5000);
+setInterval(updater, 5 * 1000);  //5 secs
+setInterval(fetchCompaionData, 60 * 1000 * 5);  // 5 min
 
 // The fiveMinUpdater is used to update the screen every 5 MINUTES 
-function fiveMinUpdater() {
-  setDate();
-  fetchCompaionData();
-}
+//function fiveMinUpdater() {
+  //fetchCompaionData();
+  //if (document.getElementById("companionStatusCircle").style.fill == "#00ff00") {
+      
+  //}
+  //if (fileName) {
+  //  fs.unlinkSync('file.txt');
+  //}
+//}
 
 function setTime() {
   clock.granularity = "seconds";
@@ -154,6 +158,7 @@ function setStatusImage(status) {
 // Request data from the companion
 function fetchCompaionData(cmd) {
   setStatusImage('refresh.png')
+  document.getElementById("companionStatusCircle").style.fill = "#595959";
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     document.getElementById("companionStatusCircle").style.fill = "#00ff00";
     // Send a command to the companion
@@ -171,7 +176,7 @@ function fetchCompaionData(cmd) {
 messaging.peerSocket.onerror = function(err) {
   // Handle any errors
   console.log("Connection error: " + err.code + " - " + err.message);
-  document.getElementById("companionStatusCircle").style.fill = "#e60000";
+  document.getElementById("companionStatusCircle").style.fill = "#cc0000";
 }
 
 function processPrevWeatherPullDifTime(time) {
@@ -322,7 +327,23 @@ function processWeatherData(data) {
     } else
     
     // weather data color based on temp
-    if (data.temperature < "32") {
+    if (data.temperature < "0") {
+      var veryCold = "#3377ff";
+      document.getElementById("temp").style.fill = veryCold;
+      document.getElementById("tempTrend").style.fill = veryCold;
+      document.getElementById("hum").style.fill = veryCold;
+      document.getElementById("humPercent").style.fill = veryCold;
+      document.getElementById("humTrend").style.fill = veryCold;
+      document.getElementById("weatherDesc").style.fill = veryCold;
+      document.getElementById("windspeed").style.fill = veryCold;
+      document.getElementById("dewpoint").style.fill = veryCold;
+      document.getElementById("dpTrend").style.fill = veryCold;
+      document.getElementById("uvTrend").style.fill = veryCold;
+      document.getElementById("wxTime").style.fill = veryCold;
+      document.getElementById("uv").style.fill = veryCold;
+      document.getElementById("raintoday").style.fill = veryCold;
+    }  
+    else if (data.temperature < "32") {
       var cold = "#99bbff";
       document.getElementById("temp").style.fill = cold;
       document.getElementById("tempTrend").style.fill = cold;
@@ -386,8 +407,8 @@ function processWeatherData(data) {
       document.getElementById("uv").style.fill = hot;
       document.getElementById("raintoday").style.fill = hot;
     } 
-  } else if (data.temperature > "99") {
-      var hell = "#ff4d4d";
+    else {
+      var hell = "#ff6633";
       document.getElementById("temp").style.fill = hell;
       document.getElementById("tempTrend").style.fill = hell;
       document.getElementById("hum").style.fill = hell;
@@ -400,7 +421,8 @@ function processWeatherData(data) {
       document.getElementById("uvTrend").style.fill = hell;      
       document.getElementById("wxTime").style.fill = hell;
       document.getElementById("uv").style.fill = hell;
-      document.getElementById("raintoday").style.fill = hell;    
+      document.getElementById("raintoday").style.fill = hell;   
+    }  
   }
 }
 
@@ -444,13 +466,36 @@ function processAirQuality(data) {
   }
 }
 
-function processRiverGauge(data) {
+/*function processRiverGauge(data) {
+  document.getElementById("riverStage").style.fontWeight = "normal";
   document.getElementById("riverStage").text = data.stage + "ft";
   if (data.stage > 6){
     document.getElementById("riverStage").style.fill = "#4d4dff";
   } 
   if (data.stage > 2) {
     document.getElementById("riverStage").style.fontWeight = "bold";            
+  }
+}*/
+
+
+// temp showing coastal water/air temps
+function processRiverGauge(data) {
+  console.log("air/water temp is: " + JSON.stringify(data));
+  document.getElementById("riverStage").style.fontWeight = "normal";
+  if (data.airTemp && data.waterTemp) {
+    document.getElementById("riverStage").text = data.airTemp + "/" + data.waterTemp + "°";
+  } else if (data.airTemp) {
+    document.getElementById("riverStage").text = data.airTemp + "/--°";
+  } else if (data.waterTemp) {
+    document.getElementById("riverStage").text = "--/" + data.waterTemp + "°";
+  } else {
+    document.getElementById("riverStage").text = "--/--°";
+  }
+  
+  if (data.waterTemp) {
+    if (data.waterTemp > 69){
+      document.getElementById("riverStage").style.fontWeight = "bold";
+    }   
   }
 }
 
@@ -490,16 +535,15 @@ function processOneBg(data) {
     document.getElementById("delta").text = data.delta + ' ' + data.units_hint
     totalSeconds = 0;
     setStatusImage('checked.png')
-    clearTimeout(timeOut);
-    timeOut = setTimeout(fiveMinUpdater, data.nextPull) 
-   
+    //clearTimeout(timeOut);
+    //timeOut = setTimeout(fetchCompaionData, data.nextPull) 
   } else {
     document.getElementById("bg").text = '???'
     document.getElementById("delta").text = 'no data'
-    setArrowDirection(0)
+    //setArrowDirection(0)
     setStatusImage('warrning.png')
     // call function every 10 or 15 mins to check again and see if the data is there   
-    setTimeout(fiveMinUpdater, 600000)    
+    //setTimeout(fetchCompaionData, 600000)    
   }
 }
 
@@ -515,97 +559,101 @@ inbox.onnewfile = () => {
     // If there is a file, move it from staging into the application folder
     fileName = inbox.nextFile();
     if (fileName) {
-     
-      const data = fs.readFileSync('file.txt', 'cbor');  
-      const CONST_COUNT = data.BGD.length - 1;
-      let count = CONST_COUNT;
+      const data = fs.readFileSync('file.txt', 'cbor');
       
-      //document.getElementById("bg").style.fill="white"
+      if (data.BGD) {
+        const CONST_COUNT = data.BGD.length - 1;
+        let count = CONST_COUNT;
       
-      // High || Low alert  
+        //document.getElementById("bg").style.fill="white"
       
-      let sgv = data.BGD[count].sgv;
+        // High || Low alert  
+        
+        let sgv = data.BGD[count].sgv;
       
-      if( data.BGD[CONST_COUNT].units_hint == 'mmol' ){
-        sgv = mmol(sgv)
-      }
-      
-      console.log(data.settings.lowThreshold);
-      if( sgv >=  data.settings.highThreshold) {
-        document.getElementById("bg").style.fill = "orange"
-        if((data.BGD[count].delta > 0)){
-          console.log('BG HIGH') 
-          //startVibration("nudge", 3000, sgv)
-          //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
-        } else {
-          console.log('BG still HIGH, But you are going down') 
-          showAlertModal = true;
+        if( data.BGD[CONST_COUNT].units_hint == 'mmol' ){
+          sgv = mmol(sgv)
         }
-      }
-      else if(sgv <=  data.settings.lowThreshold) {
-        document.getElementById("bg").style.fill="#cc0000"
-         if((data.BGD[count].delta < 0)){
-            console.log('BG LOW') 
-           // mute the alert for 20 minutes... 4 pulls from the cgm
-            if (numPulls == 0) {
-              startVibration("nudge", 3000, sgv);    
-            }
-            if (numPulls == 5) {
-              numPulls = 0;
-            } else {
-              numPulls++;
-            }
-            //document.getElementById("bgColor").style.gradient-color1="#58130e"
+      
+        console.log(data.settings.lowThreshold);
+        if( sgv >=  data.settings.highThreshold) {
+          document.getElementById("bg").style.fill = "orange"
+          if((data.BGD[count].delta > 0)){
+            console.log('BG HIGH') 
+            //startVibration("nudge", 3000, sgv)
+            //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
+          } else {
+            console.log('BG still HIGH, But you are going down') 
+            showAlertModal = true;
+          }
+        } else if(sgv <=  data.settings.lowThreshold) {
+          document.getElementById("bg").style.fill="#cc0000"
+           if((data.BGD[count].delta < 0)){
+             console.log('BG LOW') 
+             // mute the alert for 20 minutes... 4 pulls from the cgm
+             if (numPulls == 0) {
+               startVibration("nudge", 3000, sgv);    
+             }
+             if (numPulls == 5) {
+               numPulls = 0;
+             } else {
+               numPulls++;
+             }
+             //document.getElementById("bgColor").style.gradient-color1="#58130e"
            } else {
-          console.log('BG still LOW, But you are going UP') 
-          showAlertModal = true;
-        }
-      } else {
-        document.getElementById("bg").style.fill="#4d94ff"
-      }
-      //End High || Low alert      
-    
-      processOneBg(data.BGD[count])
+           console.log('BG still LOW, But you are going UP') 
+           showAlertModal = true;
+         }
+       } else {
+         document.getElementById("bg").style.fill="#4d94ff"
+       }
+       //End High || Low alert      
+   
+       processOneBg(data.BGD[count])
       
-      settings(data.settings, data.BGD[count].units_hint)
+       settings(data.settings, data.BGD[count].units_hint)
 
       
-      // Added by NiVZ    
-      let ymin = 999;
-      let ymax = 0;
+       // Added by NiVZ    
+       let ymin = 999;
+       let ymax = 0;
       
-      data.BGD.forEach(function(bg, index) {
-        if (bg.sgv < ymin) { ymin = bg.sgv; }
-        if (bg.sgv > ymax) { ymax = bg.sgv; }
-      })
+       data.BGD.forEach(function(bg, index) {
+         if (bg.sgv === undefined) {
+           bg.sgv = -1;
+         }
+         if (bg.sgv < ymin) { ymin = bg.sgv; }
+         if (bg.sgv > ymax) { ymax = bg.sgv; }
+       })
       
-      ymin -=20;
-      ymax +=20;
+       ymin -=20;
+       ymax +=20;
       
-      ymin = Math.floor((ymin/10))*10;
-      ymax = Math.floor(((ymax+9)/10))*10;
+       ymin = Math.floor((ymin/10))*10;
+       ymax = Math.floor(((ymax+9)/10))*10;
             
-      ymin = ymin < 40 ? ymin : 40;
-      ymax = ymax < 210 ? 210 : ymax;
+       ymin = ymin < 40 ? ymin : 40;
+       ymax = ymax < 210 ? 210 : ymax;
       
-      high.text = ymax;
-      middle.text = Math.floor(ymin + ((ymax-ymin) *0.5));
-      low.text = ymin;
+       high.text = ymax;
+       middle.text = Math.floor(ymin + ((ymax-ymin) *0.5));
+       low.text = ymin;
       
-      //If mmol is requested format
-      if( data.BGD[CONST_COUNT].units_hint == 'mmol' ){
+       //If mmol is requested format
+       if( data.BGD[CONST_COUNT].units_hint == 'mmol' ){
         
-        high.text = mmol(ymax);
-        middle.text = mmol(Math.floor(ymin + ((ymax-ymin) *0.5)));
-        low.text = mmol(ymin = ymin < 0 ? 0 : ymin);
-        data.BGD[CONST_COUNT].sgv = mgdl(data.BGD[CONST_COUNT].sgv)
-      }
+         high.text = mmol(ymax);
+         middle.text = mmol(Math.floor(ymin + ((ymax-ymin) *0.5)));
+         low.text = mmol(ymin = ymin < 0 ? 0 : ymin);
+         data.BGD[CONST_COUNT].sgv = mgdl(data.BGD[CONST_COUNT].sgv)
+       }
       
-      myGraph.setLowHigh(data.settings.lowThreshold, data.settings.highThreshold, 100);
-      // Set the graph scale
-      myGraph.setYRange(ymin, ymax);
-      // Update the graph
-      myGraph.update(data.BGD);
+       myGraph.setLowHigh(data.settings.lowThreshold, data.settings.highThreshold, 100);
+       // Set the graph scale
+       myGraph.setYRange(ymin, ymax);
+       // Update the graph
+       myGraph.update(data.BGD);        
+      }
       
       if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 19) {
         if (data.weather) {
@@ -614,20 +662,22 @@ inbox.onnewfile = () => {
         if (data.airQuality) {
           processAirQuality(data.airQuality);  
         }
-        if (data.riverGauge) {
-          processRiverGauge(data.riverGauge);  
+        //if (data.riverGauge) {
+        //  processRiverGauge(data.riverGauge);  
+        //}
+        if (data.waterAirInfo) {
+          processRiverGauge(data.waterAirInfo);  
         }
       }
       
       if (data.iob) {
         processIOB(data.iob);    
       }
-      document.getElementById("companionStatusCircle").style.fill = "#3385ff";
+      
+      setDate();
     }
+    document.getElementById("companionStatusCircle").style.fill = "#3385ff";
   } while (fileName);
-  //if (fileName) {
-  //  fs.unlinkSync('file.txt');
-  //}
 };
 
 //----------------------------------------------------------
@@ -713,7 +763,7 @@ btnRight.onclick = function(evt) {
 
 document.getElementById("status-image").onclick = (e) => {
   vibration.start("nudge");
-  fiveMinUpdater();
+  fetchCompaionData();
 }
  
 // document.getElementById("alertBtn").onclick = (e) => {
