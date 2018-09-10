@@ -32,7 +32,7 @@ function queryWUnderground() {
           windspeed: data["current_observation"]["wind_mph"],
           winddir: data["current_observation"]["wind_dir"],
           dewpoint: data["current_observation"]["dewpoint_f"],
-          uv: data["current_observation"]["solarradiation"],
+          uv: data["current_observation"]["UV"],
           raintoday: data["current_observation"]["precip_today_in"],
           wxTime: data["current_observation"]["observation_epoch"]
         }
@@ -56,21 +56,44 @@ function queryAirNow() {
      return response.json()
       .then(function(data) {
        console.log(JSON.stringify(data));
-       if (data[0]["ParameterName"] == "O3") {
-         if (data[1]) {
-           var airQuality = {
-             O3: data[0]["AQI"],
-             PM2_5: data[1]["AQI"]
-           }    
-         } else {
-           var airQuality = {
-             O3: data[0]["AQI"]
-           }   
-         }    
-       } else if (data[0]["ParameterName"] == "PM2.5") {
+       if (data[0] && data[1] && data[2]) {
          var airQuality = {
-             PM2_5: data[1]["AQI"]
-         }               
+           O3: data[0]["AQI"],
+           PM2_5: data[1]["AQI"],
+           PM10: data[2]["AQI"]
+         }      
+       } else if (data[0] && data[1]) {
+           if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM2.5") {
+             var airQuality = {
+               O3: data[0]["AQI"],
+               PM2_5: data[1]["AQI"]
+             }       
+           } else if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM10") {
+               var airQuality = {
+                 O3: data[0]["AQI"],
+                 PM10: data[1]["AQI"]        
+               }
+             } else if (data[0]["ParameterName"] == "PM2.5" && data[1]["ParameterName"] == "PM10") {
+                 var airQuality = {
+                   PM2_5: data[0]["AQI"],
+                   PM10: data[1]["AQI"]        
+                 }         
+             }   
+       } else if (data[0]) {
+           if (data[0]["ParameterName"] == "O3") {
+             var airQuality = {
+               O3: data[0]["AQI"]      
+             }       
+           } else if (data[0]["ParameterName"] == "PM2.5") {
+               var airQuality = {
+                 PM2_5: data[0]["AQI"]      
+               }          
+           } else if (data[0]["ParameterName"] == "PM10") {
+               var airQuality = {
+                 PM10: data[0]["AQI"]      
+               }          
+           }
+         
        }
         // Send the air quality data to the device
         return airQuality;
@@ -325,7 +348,7 @@ function getSettings(key) {
 }
 
 function getSgvURL() {
-  if(getSettings('endpoint').name) {
+  if(getSettings('endpoint').name && getSettings('endpoint').name != '') {
     return getSettings('endpoint').name+"?count=24&brief_mode=Y"
   } else {
     // Default xDrip web service 
@@ -334,25 +357,25 @@ function getSgvURL() {
 }
 
 function getWeatherEndPoint() {
-  if (getSettings('StationID').name && getSettings('wuAPI').name){
+  if (getSettings('StationID').name && getSettings('wuAPI').name && getSettings('StationID').name != '' && getSettings('wuAPI').name != ''){
     return "https://api.wunderground.com/api/" + getSettings('wuAPI').name + "/conditions/q/pws:" + getSettings('StationID').name + ".json";
   }
 }
 
 function getAirNowEndPoint() {
-  if (getSettings('anAPI').name && getSettings('anZip').name){
+  if (getSettings('anAPI').name && getSettings('anZip').name && getSettings('anAPI').name != '' && getSettings('anZip').name != ''){
     return "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=" + getSettings('anZip').name + "&distance=10&API_KEY=" + getSettings('anAPI').name;
   }
 }
 
 function getUSGSRiverEndPoint() {
-  if (getSettings('gaugeID')){
+  if (getSettings('gaugeID'.name) && getSettings('gaugeID'.name != '')){
     return "https://waterservices.usgs.gov/nwis/iv/?format=json&parameterCd=00065&sites=" + getSettings('gaugeID').name;
   }
 }
 
 function getWaterTempEndPoint() {
-  if (getSettings('WaterTempStationID')){
+  if (getSettings('WaterTempStationID') && getSettings('WaterTempStationID') != ''){
     return "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/2/query?where=locid%3D%27" + getSettings('WaterTempStationID').name.toUpperCase() + "%27+AND+projmins%3D0&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=sst1_f%2Ctmdb_f%2Cstarttime&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentsOnly=false&datumTransformation=&parameterValues=&rangeValues=&f=pjson";
   }
 }

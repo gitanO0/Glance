@@ -23,17 +23,17 @@
       
       <text id="weatherDesc" class="weather-text weather-color" x="38%" y="17.5%" text-anchor="middle">--</text>
       
-      <text id="windspeed" class="weather-text weather-color" x="39%" y="26%" text-anchor="middle">--</text>
+      <text id="windspeed" class="weather-text weather-color" x="38%" y="26%" text-anchor="middle">--</text>
       
       <text id="dewpoint" class="weather-text weather-color" x="23%" y="36%" text-anchor="end">--</text>
       <text id="dpTrend" class="weather-text weather-color" x="19.5%" y="37%" text-anchor="start"></text>
       
-      <text id="uv" class="weather-text weather-color" x="43%" y="36%" text-anchor="end">--</text>
-      <text id="uvTrend" class="weather-text weather-color" x="43%" y="34%" text-anchor="start"></text>
+      <text id="uv" class="weather-text weather-color" x="45%" y="36%" text-anchor="end">--</text>
+      <text id="uvTrend" class="weather-text weather-color" x="45%" y="34%" text-anchor="start"></text>
       
-      <text id="wxTime" class="weather-text weather-color wxtime-text" x="84%" y="36%" text-anchor="end">--</text> 
+      <text id="wxTime" class="weather-text weather-color wxtime-text" x="85%" y="36%" text-anchor="end">--</text> 
       
-      <text id="raintoday" class="weather-text weather-color" x="69%" y="36%" text-anchor="end">--</text>
+      <text id="raintoday" class="weather-text weather-color" x="65%" y="36%" text-anchor="end">--</text>
 
       <text id="delta" class="status-text h2" x="99%" y="7%" text-anchor="end">loading...</text>
       <text id="bg" class="h1 status-text" x="99%" y="20.5%"  text-anchor="end" >---</text>
@@ -55,7 +55,7 @@
      <text id="heart" class="h2 status-text heart-color"  x="6%" y="97%" text-anchor="middle">--</text>
       
      <image class="image step-color" x="20%" y="79%" href="img/steps.png"/>
-     <text id="step" class="h2 status-text step-color"  x="25%" y="97%" text-anchor="middle">--</text>
+     <text id="step" class="h2 status-text step-color"  x="24%" y="97%" text-anchor="middle">--</text>
       
      <text id="floors" class="floor-text"  x="87%" y="72%" text-anchor="end">--</text>
       
@@ -67,8 +67,9 @@
       
      <circle id="companionStatusCircle"class="companionStatus" cx="97%" cy="31%" r="4" />
       
-     <circle id="o3Circle"class="o3" cx="88%" cy="47%" r="6" />
-     <circle id="pm25Circle"class="pm25" cx="96%" cy="47%" r="6" />
+     <circle id="o3Circle"class="o3" cx="86%" cy="47%" r="5" />
+     <circle id="pm25Circle"class="pm25" cx="92%" cy="47%" r="5" />
+     <circle id="pm10Circle"class="pm10" cx="98%" cy="47%" r="5" />
       
       <!-- Alert -->
       <svg id="popup" display="none" >

@@ -1,8 +1,8 @@
 {
   "fitbit": {
-    "appUUID": "7b5d9822-7e8e-41f9-a2a7-e823548c001c",
+    "appUUID": "5aa04564-e85b-4603-b862-731d7b58022f",
     "appType": "clockface",
-    "appDisplayName": "Glance",
+    "appDisplayName": "GlancePlus",
     "iconFile": "resources/icon.png",
     "wipeColor": "#e91e63",
     "requestedPermissions": [
@@ -18,7 +18,7 @@
     ],
     "i18n": {
       "en": {
-        "name": "Glance"
+        "name": "GlancePlus"
       }
     }
   }
