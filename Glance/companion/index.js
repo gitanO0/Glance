@@ -260,9 +260,9 @@ function formatReturnData() {
        resolve( queryAirNow() );
      });
   
-     let riverGaugePromise = new Promise(function(resolve, reject) {
-       resolve( queryUSGSRiver() );
-     }); 
+     //let riverGaugePromise = new Promise(function(resolve, reject) {
+     //  resolve( queryUSGSRiver() );
+     //}); 
   
      let WaterTempPromise = new Promise(function(resolve, reject) {
        resolve( queryWaterTemp() );
@@ -289,15 +289,16 @@ function formatReturnData() {
     } else {
      lowThreshold = 70
     }
-      
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise, riverGaugePromise, IOBPromise, WaterTempPromise]).then(function(values) {
+    
+    // riverGaugePromise   ... removed for now.  issues... using the sandiego water temp stuff in its place
+    // 'riverGauge' : values[3],
+    Promise.all([weatherPromise, BGDPromise, airQualityPromise, IOBPromise, WaterTempPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
         'BGD':values[1],
         'airQuality' : values[2],
-        'riverGauge' : values[3],
-        'iob' : values[4],
-        'waterAirInfo' : values[5],
+        'iob' : values[3],
+        'waterAirInfo' : values[4],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
@@ -369,8 +370,8 @@ function getAirNowEndPoint() {
 }
 
 function getUSGSRiverEndPoint() {
-  if (getSettings('gaugeID'.name) && getSettings('gaugeID'.name != '')){
-    return "https://waterservices.usgs.gov/nwis/iv/?format=json&parameterCd=00065&sites=" + getSettings('gaugeID').name;
+  if (getSettings('gaugeID'.name)){
+    return "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=" + getSettings('gaugeID').name + "&parameterCd=00065&siteStatus=active";
   }
 }
 

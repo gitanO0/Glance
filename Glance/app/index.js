@@ -11,10 +11,10 @@ import clock from "clock";
 
 import Graph from "graph.js";
 
-let prevTemp = 0;
-let prevHum = 0;
-let prevDP = 0;
-let prevUV = 0;
+let prevTemp = 999;
+let prevHum = 999;
+let prevDP = 999;
+let prevUV = 999;
 
 let heartRate = new HeartRateSensor();
 let totalSeconds = 0;
@@ -46,9 +46,15 @@ function updater() {
   setBattery();
   startMonitors();
   addSecond();
+  
+  // process prev weather pull time now incase the companion connection is broken, we still want to see this time diff
+  if (prevWeatherPullTime != null) {
+    var lastUpdatedTime = processPrevWeatherPullDifTime(prevWeatherPullTime);
+    setTimeUI(lastUpdatedTime);
+  }
 }
-setInterval(updater, 5 * 1000);  //5 secs
-setInterval(fetchCompaionData, 60 * 1000 * 5);  // 5 min
+setInterval(updater, (5 * 1000));  //5 secs
+setInterval(fetchCompaionData, ((60 * 1000) * 5));  // 5 min
 
 // The fiveMinUpdater is used to update the screen every 5 MINUTES 
 //function fiveMinUpdater() {
@@ -165,7 +171,6 @@ function setStatusImage(status) {
 // Request data from the companion
 function fetchCompaionData(cmd) {
   setStatusImage('refresh.png')
-  document.getElementById("companionStatusCircle").style.fill = "#595959";
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     document.getElementById("companionStatusCircle").style.fill = "#00ff00";
     // Send a command to the companion
@@ -207,7 +212,7 @@ function processWeatherData(data) {
     
     //temp
     console.log("prev temp: " + prevTemp + ", curr temp: " + data.temperature)
-    if (prevTemp != 0) {
+    if (prevTemp != 999) {
       if (prevTemp < data.temperature) {
         document.getElementById("tempTrend").text = "+";    
       } else if (prevTemp > data.temperature) {
@@ -231,7 +236,7 @@ function processWeatherData(data) {
       document.getElementById("humPercent").style.fontWeight = "bold";
     }
     console.log("prev hum: " + prevHum + ", curr hum: " + hum)
-    if (prevHum != 0) {
+    if (prevHum != 999) {
       if (prevHum < hum) {
         document.getElementById("humTrend").text = "+";    
       } else if (prevHum > hum) {
@@ -260,7 +265,7 @@ function processWeatherData(data) {
     var td = (Math.round(data.temperature) - Math.round(data.dewpoint));
     document.getElementById("dewpoint").text = "td" + td + "°";
     console.log("prev dp: " + prevDP + ", curr dp: " + data.dewpoint)
-    if (prevDP != 0) {
+    if (prevDP != 999) {
       if (prevDP < td) {
         document.getElementById("dpTrend").text = "+";    
       } else if (prevDP > td) {
@@ -309,7 +314,7 @@ function processWeatherData(data) {
         document.getElementById("uvTrend").style.fontWeight = "bold";
       }
       console.log("prev uv: " + prevUV + ", curr uv: " + data.uv)
-      if (prevUV != 0) {
+      if (prevUV != 999) {
         if (prevUV < data.uv) {
           document.getElementById("uvTrend").text = "+";    
         } else if (prevUV > data.uv) {
@@ -338,17 +343,7 @@ function processWeatherData(data) {
     
     //time since weather station last updated
     let lut = processPrevWeatherPullDifTime(data.wxTime);
-    document.getElementById("wxTime").style.fontWeight = "regular";
-    if (lut > 24) {
-      document.getElementById("wxTime").style.fontWeight = "bold";
-    }
-    if (lut < 100) {
-      document.getElementById("wxTime").text = lut +"m";  
-    } else {
-      //in hours if over 99 minutes ago
-      lastUpdatedTime = (lut / 60).toFixed(1);      
-      document.getElementById("wxTime").text = lut +"h";
-    }
+    setTimeUI(lut);
     
     //windspeed
     if (data.winddir === 'North') {
@@ -375,7 +370,7 @@ function processWeatherData(data) {
     }
     
     // weather data color based on temp
-    if (data.temperature < "0") {
+    if (Math.round(data.temperature) < "0") {
       var veryCold = "#3377ff";
       document.getElementById("temp").style.fill = veryCold;
       document.getElementById("tempTrend").style.fill = veryCold;
@@ -391,7 +386,7 @@ function processWeatherData(data) {
       //document.getElementById("uv").style.fill = veryCold;
       document.getElementById("raintoday").style.fill = veryCold;
     }  
-    else if (data.temperature < "32") {
+    else if (Math.round(data.temperature) < "32") {
       var cold = "#99bbff";
       document.getElementById("temp").style.fill = cold;
       document.getElementById("tempTrend").style.fill = cold;
@@ -407,7 +402,7 @@ function processWeatherData(data) {
       //document.getElementById("uv").style.fill = cold;
       document.getElementById("raintoday").style.fill = cold;
     }
-    else if (data.temperature < "65") {
+    else if (Math.round(data.temperature) < "65") {
       var cool = "#adebeb";
       document.getElementById("temp").style.fill = cool;
       document.getElementById("tempTrend").style.fill = cool;
@@ -423,7 +418,7 @@ function processWeatherData(data) {
       //document.getElementById("uv").style.fill = cool;
       document.getElementById("raintoday").style.fill = cool;
     }
-    else if (data.temperature < "85") {
+    else if (Math.round(data.temperature) < "85") {
       var warm = "lime";
       document.getElementById("temp").style.fill = warm;
       document.getElementById("tempTrend").style.fill = warm;
@@ -439,7 +434,7 @@ function processWeatherData(data) {
       //document.getElementById("uv").style.fill = warm;
       document.getElementById("raintoday").style.fill = warm;
     }
-    else if (data.temperature < "100") {
+    else if (Math.round(data.temperature) < "100") {
       var hot = "#ffb399";
       document.getElementById("temp").style.fill = hot;
       document.getElementById("tempTrend").style.fill = hot;
@@ -542,6 +537,25 @@ function processAirQuality(data) {
   }
 }*/
 
+//set time UI elements
+function setTimeUI (time) {
+  document.getElementById("wxTime").style.fontWeight = "regular";
+  if (time > 24) {
+      document.getElementById("wxTime").style.fontWeight = "bold";
+    }
+    var lastUpdatedTime;
+    if (time < 60) {
+      document.getElementById("wxTime").text = time +"m";  
+    } else if (time < 6000) {
+      //in hours if over 99 minutes ago
+      lastUpdatedTime = (time / 60).toFixed(1);      
+      document.getElementById("wxTime").text = lastUpdatedTime +"h";
+    } else {
+      //in days if over 99 hours ago
+      lastUpdatedTime = ((time / 60) / 24).toFixed(1);      
+      document.getElementById("wxTime").text = lastUpdatedTime +"d";  
+    }  
+}
 
 // temp showing coastal water/air temps
 function processRiverGauge(data) {
@@ -670,7 +684,7 @@ inbox.onnewfile = () => {
            showAlertModal = true;
          }
        } else {
-         document.getElementById("bg").style.fill="#4d94ff"
+         document.getElementById("bg").style.fill="#1a75ff";
        }
        //End High || Low alert      
    
@@ -720,7 +734,8 @@ inbox.onnewfile = () => {
        myGraph.update(data.BGD);        
       }
       
-      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 19) {
+      //only update the weather every 15+ minutes so we can get meaningful trend info
+      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
         if (data.weather) {
           processWeatherData(data.weather);    
         }
@@ -741,7 +756,7 @@ inbox.onnewfile = () => {
       
       setDate();
     }
-    document.getElementById("companionStatusCircle").style.fill = "#3385ff";
+    document.getElementById("companionStatusCircle").style.fill = "#1a75ff";
   } while (fileName);
 };
 
