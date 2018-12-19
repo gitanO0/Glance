@@ -103,6 +103,12 @@
    height:32;
 }
 
+.image2 {
+   width:18;
+   height:18;
+}
+
+
 .graph-point {
   fill:#b0b1b2;
 }
@@ -138,14 +144,21 @@
 .floor-text {
   text-length: 4;
   font-family: SevilleSharp;
-  font-size:26;
+  font-size:24;
   fill: #df80ff;
 }
 
-.river-text {
-  text-length: 8;
+.charge-text {
+  text-length: 4;
   font-family: SevilleSharp;
-  font-size:28;
+  font-size:24;
+  fill: #ffff00;
+}
+
+.river-text {
+  text-length: 24;
+  font-family: SevilleSharp;
+  font-size:27;
   fill: #9999ff;
 }
 

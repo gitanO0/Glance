@@ -16,93 +16,130 @@ var API_KEY = null;
 var ENDPOINT = null;
 
 // Fetch the weather from OpenWeather
-function queryWUnderground() {
-  let weatherURL = getWeatherEndPoint();
-  console.log(weatherURL);
-  return fetch(weatherURL)
-  .then(function (response) {
-     return response.json()
-      .then(function(data) {
-       console.log(data);
-       var weather = {
-          temperature: data["current_observation"]["temp_f"],
-          humidity: data["current_observation"]["relative_humidity"],
-          weatherDesc: data["current_observation"]["weather"],
-          windgust: data["current_observation"]["wind_gust_mph"],
-          windspeed: data["current_observation"]["wind_mph"],
-          winddir: data["current_observation"]["wind_dir"],
-          dewpoint: data["current_observation"]["dewpoint_f"],
-          uv: data["current_observation"]["UV"],
-          raintoday: data["current_observation"]["precip_today_in"],
-          wxTime: data["current_observation"]["observation_epoch"]
-        }
-        // Send the weather data to the device
-        console.log(JSON.stringify(data));
-        return weather;
-      });
-  })
-  .catch(function (err) {
-    //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
-    //console.log(getWeatherEndPoint());
-    console.log("Error getting weather" + err);
-  });
+function queryWeather(data1) {
+  if (data1.pullWeather === undefined || data1.pullWeather == true) {
+     let weatherURL = getWeatherEndPoint();
+     console.log(weatherURL);
+     return fetch(weatherURL)
+     .then(function (response) {
+       return response.json()
+        .then(function(data) {
+         console.log(data);
+         
+         var weather = {
+            temperature: data["currently"]["temperature"],
+            humidity: data["currently"]["humidity"],
+            weatherDesc: data["currently"]["summary"],
+            windgust: data["currently"]["windGust"],
+            windspeed: data["currently"]["windSpeed"],
+            winddir: data["currently"]["windBearing"],
+            dewpoint: data["currently"]["dewPoint"],
+            uv: data["currently"]["uvIndex"],
+            raintoday: data["currently"]["precipProbability"],
+            wxTime: data["currently"]["time"]
+          }
+          // Send the weather data to the device
+          console.log(JSON.stringify(data));
+          return weather;
+        });
+    })
+    .catch(function (err) {
+      //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
+      //console.log(getWeatherEndPoint());
+      console.log("Error getting weather" + err);
+    });
+  }
+  else {
+    var weather = {};
+  }
 }
 
-function queryAirNow() {
-  let airQualityURL = getAirNowEndPoint();
-  console.log(airQualityURL);
-  return fetch(airQualityURL)
-  .then(function (response) {
-     return response.json()
-      .then(function(data) {
-       console.log(JSON.stringify(data));
-       if (data[0] && data[1] && data[2]) {
-         var airQuality = {
-           O3: data[0]["AQI"],
-           PM2_5: data[1]["AQI"],
-           PM10: data[2]["AQI"]
-         }      
-       } else if (data[0] && data[1]) {
-           if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM2.5") {
-             var airQuality = {
-               O3: data[0]["AQI"],
-               PM2_5: data[1]["AQI"]
-             }       
-           } else if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM10") {
+function querySecondWeather(data1) {
+  if (data1.pullWeather === undefined || data1.pullWeather == true) {
+    let secondWeatherURL = getSecondWeatherEndPoint();
+    console.log('Clear to pull secondary weather:  ' + data1.pullWeather)
+    console.log(secondWeatherURL);
+    return fetch(secondWeatherURL)
+    .then(function (response) {
+       return response.json()
+        .then(function(data) {
+         console.log(data);
+         var weather = {
+            temperature: data["currently"]["temperature"],
+            weatherDesc: data["currently"]["summary"],
+            windgust: data["currently"]["windGust"],
+            windspeed: data["currently"]["windSpeed"],
+            raintoday: data["currently"]["precipProbability"]
+          }
+          // Send the weather data to the device
+          console.log(JSON.stringify(data));
+          return weather;
+        });
+    })
+    .catch(function (err) {
+      //console.log(getWeatherEndPoint() + "&APPID=" + getWeatherApiKey());
+      //console.log(getWeatherEndPoint());
+      console.log("Error getting weather" + err);
+    });
+  }
+}
+
+function queryAirNow(data1) {
+  if (data1.pullWeather === undefined || data1.pullWeather == true) {
+    let airQualityURL = getAirNowEndPoint();
+    console.log(airQualityURL);
+    return fetch(airQualityURL)
+    .then(function (response) {
+       return response.json()
+        .then(function(data) {
+         console.log(JSON.stringify(data));
+         if (data[0] && data[1] && data[2]) {
+          var airQuality = {
+             O3: data[0]["AQI"],
+             PM2_5: data[1]["AQI"],
+             PM10: data[2]["AQI"]
+           }      
+         } else if (data[0] && data[1]) {
+             if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM2.5") {
                var airQuality = {
                  O3: data[0]["AQI"],
-                 PM10: data[1]["AQI"]        
-               }
-             } else if (data[0]["ParameterName"] == "PM2.5" && data[1]["ParameterName"] == "PM10") {
+                 PM2_5: data[1]["AQI"]
+               }       
+             } else if (data[0]["ParameterName"] == "O3" && data[1]["ParameterName"] == "PM10") {
                  var airQuality = {
-                   PM2_5: data[0]["AQI"],
+                   O3: data[0]["AQI"],
                    PM10: data[1]["AQI"]        
-                 }         
-             }   
-       } else if (data[0]) {
-           if (data[0]["ParameterName"] == "O3") {
-             var airQuality = {
-               O3: data[0]["AQI"]      
-             }       
-           } else if (data[0]["ParameterName"] == "PM2.5") {
+                 }
+               } else if (data[0]["ParameterName"] == "PM2.5" && data[1]["ParameterName"] == "PM10") {
+                   var airQuality = {
+                     PM2_5: data[0]["AQI"],
+                     PM10: data[1]["AQI"]        
+                   }         
+               }   
+         } else if (data[0]) {
+             if (data[0]["ParameterName"] == "O3") {
                var airQuality = {
-                 PM2_5: data[0]["AQI"]      
-               }          
-           } else if (data[0]["ParameterName"] == "PM10") {
-               var airQuality = {
-                 PM10: data[0]["AQI"]      
-               }          
-           }
-         
-       }
-        // Send the air quality data to the device
-        return airQuality;
-      });
-  })
-  .catch(function (err) {
-    //console.log(getAirNowEndPoint());
-    console.log("Error getting air quality" + err);
-  });
+                 O3: data[0]["AQI"]      
+               }       
+             } else if (data[0]["ParameterName"] == "PM2.5") {
+                 var airQuality = {
+                   PM2_5: data[0]["AQI"]      
+                 }          
+             } else if (data[0]["ParameterName"] == "PM10") {
+                 var airQuality = {
+                   PM10: data[0]["AQI"]      
+                 }          
+             }
+         }
+          // Send the air quality data to the device
+          return airQuality;
+        });
+    })
+    .catch(function (err) {
+      //console.log(getAirNowEndPoint());
+      console.log("Error getting air quality" + err);
+    });  
+  }
 }
 
 function queryUSGSRiver() {
@@ -148,8 +185,30 @@ function queryWaterTemp() {
   });
 }
 
+function queryFcRain(data1) {
+  if (data1.pullWeather === undefined || data1.pullWeather == true) {
+    let fcRainURL = getFcRainEndPoint();
+    console.log(fcRainURL);
+    return fetch(fcRainURL)
+    .then(function (response) {
+       return response.json()
+        .then(function(data) {
+         console.log(JSON.stringify(data));
+         var fcRain = {
+           hr24Rain: data["features"][0]["attributes"]["SWTR.VW_RAIN_DATA.HR24"]
+          }
+          // Send the rain data to the device
+          return fcRain;
+        });
+    })
+    .catch(function (err) {
+      console.log("Error getting rain data" + err);
+    });  
+  }
+}
+
 function queryIOB() {
-  let iobURL = "https://gitanons.azurewebsites.net/pebble";
+  let iobURL = getNightScoutEndPoint();
   console.log(iobURL);
   return fetch(iobURL)
   .then(function (response) {
@@ -158,6 +217,26 @@ function queryIOB() {
        console.log(JSON.stringify(data));
        var iob = {
          iob: data["bgs"][0]["iob"]
+        }
+        // Send the iob data to the device
+        return iob;
+      });
+  })
+  .catch(function (err) {
+    console.log("Error getting iob" + err);
+  });
+}
+
+function queryEldoraSnow() {
+  let eldoraSnowURL = getEldoraSnowEndPoint();
+  console.log(eldoraSnowURL);
+  return fetch(eldoraSnowURL)
+  .then(function (response) {
+     return response.json()
+      .then(function(data) {
+       console.log(JSON.stringify(data));
+       var iob = {
+         eldoraSnow: data["snowReport"][0]["items"][1]['amount']
         }
         // Send the iob data to the device
         return iob;
@@ -251,22 +330,34 @@ function returnData(data) {
   outbox.enqueue('file.txt', myFileInfo)
 }
 
-function formatReturnData() {
-    let weatherPromise = new Promise(function(resolve, reject) {
-       resolve( queryWUnderground() );
+function formatReturnData(data) {
+     let weatherPromise = new Promise(function(resolve, reject) {
+       resolve( queryWeather(data) );
+     });  
+  
+     let secondWeatherPromise = new Promise(function(resolve, reject) {
+       resolve( querySecondWeather(data) );
      });
   
      let airQualityPromise = new Promise(function(resolve, reject) {
-       resolve( queryAirNow() );
+       resolve( queryAirNow(data) );
+     });
+  
+     let fcRainPromise = new Promise(function(resolve, reject) {
+       resolve( queryFcRain(data) );
+     });
+  
+     let eldoraSnowPromise = new Promise(function(resolve, reject) {
+       resolve( queryEldoraSnow(data) );
      });
   
      //let riverGaugePromise = new Promise(function(resolve, reject) {
      //  resolve( queryUSGSRiver() );
      //}); 
   
-     let WaterTempPromise = new Promise(function(resolve, reject) {
-       resolve( queryWaterTemp() );
-     }); 
+     //let WaterTempPromise = new Promise(function(resolve, reject) {
+     //  resolve( queryWaterTemp() );
+     //}); 
   
      let IOBPromise = new Promise(function(resolve, reject) {
        resolve( queryIOB() );
@@ -292,18 +383,21 @@ function formatReturnData() {
     
     // riverGaugePromise   ... removed for now.  issues... using the sandiego water temp stuff in its place
     // 'riverGauge' : values[3],
-    Promise.all([weatherPromise, BGDPromise, airQualityPromise, IOBPromise, WaterTempPromise]).then(function(values) {
+    //, WaterTempPromise    'waterAirInfo' : values[5],
+    Promise.all([weatherPromise, secondWeatherPromise, fcRainPromise, BGDPromise, airQualityPromise, IOBPromise, eldoraSnowPromise]).then(function(values) {
       let dataToSend = {
         'weather':values[0],
-        'BGD':values[1],
-        'airQuality' : values[2],
-        'iob' : values[3],
-        'waterAirInfo' : values[4],
+        'secondWeather':values[1],
+        'fcRain':values[2],
+        'BGD':values[3],
+        'airQuality' : values[4],
+        'iob' : values[5],
+        'eldoraSnow' : values[6],
         'settings': {
           'bgColor': getSettings('bgColor'),
           'highThreshold': highThreshold,
           'lowThreshold': lowThreshold,
-          'timeFormat' : getSettings('timeFormat'),
+          'timeFormat' : getSettings('timeFormat')
         }
       }
       //console.log(JSON.stringify(dataToSend));
@@ -315,7 +409,7 @@ function formatReturnData() {
 // Listen for messages from the device
 messaging.peerSocket.onmessage = function(evt) {
   if (evt.data) {
-    formatReturnData();
+    formatReturnData(evt.data);
     
     console.log(JSON.stringify(evt.data));
     sendSensorDataToXdrip(evt.data);
@@ -358,8 +452,14 @@ function getSgvURL() {
 }
 
 function getWeatherEndPoint() {
-  if (getSettings('StationID').name && getSettings('wuAPI').name && getSettings('StationID').name != '' && getSettings('wuAPI').name != ''){
-    return "https://api.wunderground.com/api/" + getSettings('wuAPI').name + "/conditions/q/pws:" + getSettings('StationID').name + ".json";
+  if (getSettings('location').name && getSettings('weatherAPIkey').name && getSettings('location').name != '' && getSettings('weatherAPIkey').name != ''){
+    return "https://api.darksky.net/forecast/"+ getSettings('weatherAPIkey').name + "/" + getSettings('location').name + "?exclude=minutely,hourly,daily,flags";
+  }
+}
+
+function getSecondWeatherEndPoint() {
+  if (getSettings('secondLocation').name && getSettings('weatherAPIkey').name && getSettings('secondLocation').name != '' && getSettings('weatherAPIkey').name != ''){
+    return "https://api.darksky.net/forecast/"+ getSettings('weatherAPIkey').name + "/" + getSettings('secondLocation').name + "?exclude=minutely,hourly,daily,flags";
   }
 }
 
@@ -379,6 +479,18 @@ function getWaterTempEndPoint() {
   if (getSettings('WaterTempStationID') && getSettings('WaterTempStationID') != ''){
     return "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/2/query?where=locid%3D%27" + getSettings('WaterTempStationID').name.toUpperCase() + "%27+AND+projmins%3D0&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=sst1_f%2Ctmdb_f%2Cstarttime&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentsOnly=false&datumTransformation=&parameterValues=&rangeValues=&f=pjson";
   }
+}
+
+function getFcRainEndPoint() {
+  return "https://gisweb.fcgov.com/arcgis/rest/services/RainWarning/MapServer/3/query?f=json&returnGeometry=false&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A-11698218.002451649%2C%22ymin%22%3A4949872.5875253985%2C%22xmax%22%3A-11697988.691366794%2C%22ymax%22%3A4950101.898610254%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=SWTR.VW_RAIN_DATA.HR24&outSR=102100";
+}
+
+function getEldoraSnowEndPoint() {
+  return "https://www.eldora.com/api/v1/dor/conditions";
+}
+
+function getNightScoutEndPoint() {
+  return getSettings('NightscoutSiteURL');
 }
 
 function getTempType() {

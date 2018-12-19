@@ -9,7 +9,7 @@ import * as fs from "fs";
 import { vibration } from "haptics";
 import clock from "clock";
 
-import Graph from "graph.js";
+import Graph from "./graph.js";
 
 let prevTemp = 999;
 let prevHum = 999;
@@ -31,8 +31,9 @@ let showAlertModal = true;
 
 let numPulls = 0;
 
-//let numWeatherDataPulls = 3;  //initiize at 3 (15 minutes - 3 data pulls) to allow a first run of the weather process
 let prevWeatherPullTime = null;
+let lastFullChargeDateTime = null;
+let clearForWeatherDataPull = false;
 
 let timeOut;
 // Init 
@@ -43,7 +44,7 @@ startMonitors();
 
 // The updater is used to update the screen every 5 SECONDS 
 function updater() {
-  setBattery();
+  //setBattery();
   startMonitors();
   addSecond();
   
@@ -106,6 +107,43 @@ function setBattery() {
   }
   document.getElementById("battery").text = (Math.round(battery.chargeLevel) + "%");
   //document.getElementById("battery-level").width =  (.3 * Math.floor(battery.chargeLevel))
+  
+  if (battery.chargeLevel > 99) {
+    lastFullChargeDateTime = (new Date().getTime()); //in milliseconds
+    
+    let json_data = {
+      "lastChargeTime": lastFullChargeDateTime
+    };
+    fs.writeFileSync("lct.cbor", json_data, "cbor");
+  }
+    
+  var curDateTime = (new Date().getTime());
+  var daysSinceLastFullCharge = null;
+
+  
+  //var timeFileExists = false;
+  //var json_object = null;
+  //const listDir = fs.listDirSync("private/data");
+  //while((dirIter = listDir.next()) && !dirIter.done) {
+  //  if (dirIter.value == "lct.cbor") {
+  //    timeFileExists = true;
+  //    json_object = fs.readFileSync("lct.cbor", "cbor");
+  //  }
+  //}
+  
+  var json_object = null;
+  json_object = fs.readFileSync("lct.cbor", "cbor");
+  
+  if (lastFullChargeDateTime) {
+    daysSinceLastFullCharge = (((((curDateTime - lastFullChargeDateTime) / 1000) / 60) / 60) / 24).toFixed(1);
+  }
+  else if (json_object) {
+    daysSinceLastFullCharge = (((((curDateTime - json_object.lastChargeTime) / 1000) / 60) / 60) / 24).toFixed(1);    
+  }
+  else {
+    daysSinceLastFullCharge = "na";
+  }
+  document.getElementById("chargeDays").text = daysSinceLastFullCharge;
 }
 
 function startMonitors() {  
@@ -126,9 +164,9 @@ function startMonitors() {
    let floorCount = today.local.elevationGain;
    document.getElementById("floors").text = floorCount + "f";
    document.getElementById("floors").style.fontWeight = "regular";
-   if (floorCount > 9) {
-     document.getElementById("floors").style.fontWeight = "bold";
-   }
+   //if (floorCount > 9) {
+   //  document.getElementById("floors").style.fontWeight = "bold";
+   //}
   
   let distance = (today.local.distance || 0)+"";
   distance = (distance * 0.000621371);
@@ -174,10 +212,21 @@ function fetchCompaionData(cmd) {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     document.getElementById("companionStatusCircle").style.fill = "#00ff00";
     // Send a command to the companion
+    
+    if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
+        clearForWeatherDataPull = true;
+    }
+    else {
+        clearForWeatherDataPull = false;
+    }
+    
+    console.log("Next weather data pull set to: " + clearForWeatherDataPull);
+    
     messaging.peerSocket.send({
       command: cmd,
       heart: heartRate.heartRate,
-      steps: today.local.steps
+      steps: today.local.steps,
+      pullWeather: clearForWeatherDataPull
     });
   } else {
     document.getElementById("companionStatusCircle").style.fill = "#FF8C00";
@@ -195,7 +244,7 @@ function processPrevWeatherPullDifTime(time) {
   if (time) {
     var wxDate = time;
     var curDate = (new Date().getTime() / 1000);
-    console.log(wxDate + " " + curDate);
+    //console.log(wxDate + " " + curDate);
     var diff = (curDate - wxDate);
     var lastUpdatedTime = Math.round(diff / 60)
     return lastUpdatedTime;
@@ -205,10 +254,11 @@ function processPrevWeatherPullDifTime(time) {
 
 // Display the weather data received from the companion
 function processWeatherData(data) {
-  console.log("The temperature is: " + JSON.stringify(data));
   if(data) {
+    console.log("The temperature is: " + JSON.stringify(data));
     //set the weather pull time
-    prevWeatherPullTime = data.wxTime;
+    //prevWeatherPullTime = data.wxTime;
+    prevWeatherPullTime = (new Date().getTime() / 1000);
     
     //temp
     console.log("prev temp: " + prevTemp + ", curr temp: " + data.temperature)
@@ -225,7 +275,8 @@ function processWeatherData(data) {
     prevTemp = data.temperature;
     
     //humidity
-    var hum = data.humidity.slice(0, -1);
+    //var hum = data.humidity.slice(0, -1);
+    var hum = Math.round((data.humidity * 100));
     document.getElementById("hum").text = "h" + hum;   
     document.getElementById("hum").style.fontWeight = "regular";    
     document.getElementById("humTrend").style.fontWeight = "regular";
@@ -326,34 +377,27 @@ function processWeatherData(data) {
     }
     prevUV = data.uv;    
     
-    //raintoday
-    if (data.raintoday == "0.00") {
-      document.getElementById("raintoday").text = "r0";
-    } else if (data.raintoday =="" || data.raintoday == "-9999.00") {
-      document.getElementById("raintoday").text = "r--";
-    } else if (data.raintoday < 1) {
-      document.getElementById("raintoday").text = "r" + data.raintoday.substr(1);
-    } else {
-      document.getElementById("raintoday").text = "r" + data.raintoday;  
-    }
-    document.getElementById("raintoday").style.fontWeight = "regular";
-    if (data.raintoday > .15) {
-      document.getElementById("raintoday").style.fontWeight = "bold";
-    } 
-    
     //time since weather station last updated
     let lut = processPrevWeatherPullDifTime(data.wxTime);
     setTimeUI(lut);
     
     //windspeed
-    if (data.winddir === 'North') {
+    if (data.winddir > 347 && data.winddir <= 22) {
       data.winddir = 'N';    
-    } else if  (data.winddir === 'South') {
-      data.winddir = 'S';   
-    } else if (data.winddir === 'East') {
+    } else if  (data.winddir > 22 && data.winddir <= 67) {
+      data.winddir = 'NE';   
+    } else if (data.winddir > 67 && data.winddir <= 112) {
       data.winddir = 'E';            
-    } else if (data.winddir === 'West') {
+    } else if (data.winddir > 112 && data.winddir <= 157) {
+      data.winddir = 'SE';   
+    } else if (data.winddir > 157 && data.winddir <= 202) {
+      data.winddir = 'S';   
+    } else if (data.winddir > 202 && data.winddir <= 247) {
+      data.winddir = 'SW';   
+    } else if (data.winddir > 247 && data.winddir <= 302) {
       data.winddir = 'W';   
+    }else if (data.winddir > 302 && data.winddir <= 347) {
+      data.winddir = 'NW';   
     }
     if (data.windspeed === 0) {
       document.getElementById("windspeed").text = 'Calm';
@@ -526,6 +570,24 @@ function processAirQuality(data) {
   }
 }
 
+function processHr24Rain(data) {
+  if(data) {
+    //raintoday
+    console.log("rain today is: " + JSON.stringify(data));
+    if (data.hr24Rain == 0) {
+      document.getElementById("raintoday").text = "r--";
+    } else if (data.hr24Rain < 1) {
+      document.getElementById("raintoday").text = "r" + data.hr24Rain.toString().slice(1);  
+    } else {
+      document.getElementById("raintoday").text = "r" + data.hr24Rain;
+    }
+    document.getElementById("raintoday").style.fontWeight = "regular";
+    if (data.hr24Rain > .24) {
+      document.getElementById("raintoday").style.fontWeight = "bold";
+    }   
+  }
+}
+
 /*function processRiverGauge(data) {
   document.getElementById("riverStage").style.fontWeight = "normal";
   document.getElementById("riverStage").text = data.stage + "ft";
@@ -540,7 +602,7 @@ function processAirQuality(data) {
 //set time UI elements
 function setTimeUI (time) {
   document.getElementById("wxTime").style.fontWeight = "regular";
-  if (time > 24) {
+  if (time > 30) {
       document.getElementById("wxTime").style.fontWeight = "bold";
     }
     var lastUpdatedTime;
@@ -578,19 +640,61 @@ function processRiverGauge(data) {
   }
 }
 
+// Display secondary weather data received from the companion
+function processSecondWeatherData(data) {
+  console.log("Secondary weather is: " + JSON.stringify(data));
+  document.getElementById("riverStage").style.fontWeight = "normal";
+  document.getElementById("riverStage").text = Math.round(data.temperature) + "° " + data.weatherDesc;
+  //document.getElementById("riverStage2").text = data.windspeed;
+  var windInfo = Math.round(data.windspeed) + "(" + Math.round(data.windgust) + ")";
+  if (data.windspeed == 0) {
+    document.getElementById("riverStage2").text = 'Calm';
+    document.getElementById("riverStage2").style.fontWeight = "regular";  
+  } else if (data.windgust < 10) {
+    document.getElementById("riverStage2").text = 'Li & Var';
+    document.getElementById("riverStage2").style.fontWeight = "regular";    
+  } else if (windInfo.length > 5){
+    document.getElementById("riverStage2").text = windInfo;
+    document.getElementById("riverStage2").style.fontWeight = "regular";  
+  }
+  else {
+    document.getElementById("riverStage2").text = windInfo + "mph";
+    document.getElementById("riverStage2").style.fontWeight = "regular";   
+  }
+  if (data.windspeed > 14) {
+    document.getElementById("riverStage2").style.fontWeight = "bold";
+  }
+}
+
 function processIOB(data) {
   console.log("iob is: " + JSON.stringify(data));
   document.getElementById("iob").style.fontWeight = "regular";
   if (data.iob === undefined) {
-    document.getElementById("iob").text = "iob NA";
+    document.getElementById("iob").text = "i:NA";
   } else if (data.iob == "0.00" || data.iob == 0) {
-    document.getElementById("iob").text = "iob 0";
+    document.getElementById("iob").text = "i:0";
   } else if (data.iob > 0) {
     document.getElementById("iob").style.fontWeight = "bold";    
-    document.getElementById("iob").text = "iob " + data.iob;
+    document.getElementById("iob").text = "i:" + data.iob;
   }
   else {
     document.getElementById("iob").text = "--";
+  }
+}
+
+function processEldoraSnow(data) {
+  console.log("eldora snow is: " + JSON.stringify(data));
+  document.getElementById("eldoraSnow").style.fontWeight = "regular";
+  if (data.eldoraSnow === undefined) {
+    document.getElementById("eldoraSnow").text = "-";
+  } else if (data.eldoraSnow == 0) {
+    document.getElementById("eldoraSnow").text = "0";
+  } else if (data.eldoraSnow > 0) {
+    document.getElementById("eldoraSnow").style.fontWeight = "bold";    
+    document.getElementById("eldoraSnow").text = data.eldoraSnow;
+  }
+  else {
+    document.getElementById("eldoraSnow").text = "-";
   }
 }
 
@@ -622,7 +726,9 @@ function processOneBg(data) {
     //setArrowDirection(0)
     setStatusImage('warrning.png')
     // call function every 10 or 15 mins to check again and see if the data is there   
-    //setTimeout(fetchCompaionData, 600000)    
+    //setTimeout(fetchCompaionData, 600000)
+    
+    document.getElementById("bgColor").gradient.colors.c1 = "#666600";
   }
 }
 
@@ -660,31 +766,32 @@ inbox.onnewfile = () => {
           if((data.BGD[count].delta > 0)){
             console.log('BG HIGH') 
             //startVibration("nudge", 3000, sgv)
-            //document.getElementById("bgColor").style.gradient-color1 = "#58130e"
+            document.getElementById("bgColor").gradient.colors.c1 = "#664200";
           } else {
             console.log('BG still HIGH, But you are going down') 
             showAlertModal = true;
           }
         } else if(sgv <=  data.settings.lowThreshold) {
-          document.getElementById("bg").style.fill="#cc0000"
+          document.getElementById("bg").style.fill="#ff0000"
            if((data.BGD[count].delta < 0)){
              console.log('BG LOW') 
              // mute the alert for 20 minutes... 4 pulls from the cgm
              if (numPulls == 0) {
-               startVibration("nudge", 3000, sgv);    
+               startVibration("nudge", 8000, sgv);    
              }
              if (numPulls == 5) {
                numPulls = 0;
              } else {
                numPulls++;
              }
-             //document.getElementById("bgColor").style.gradient-color1="#58130e"
+             document.getElementById("bgColor").gradient.colors.c1 = "#660000";
            } else {
            console.log('BG still LOW, But you are going UP') 
            showAlertModal = true;
          }
        } else {
          document.getElementById("bg").style.fill="#1a75ff";
+         document.getElementById("bgColor").gradient.colors.c1 = "#002966";
        }
        //End High || Low alert      
    
@@ -735,26 +842,37 @@ inbox.onnewfile = () => {
       }
       
       //only update the weather every 15+ minutes so we can get meaningful trend info
-      if (prevWeatherPullTime == null || processPrevWeatherPullDifTime(prevWeatherPullTime) > 14) {
+      if (clearForWeatherDataPull == true) {
         if (data.weather) {
           processWeatherData(data.weather);    
         }
         if (data.airQuality) {
           processAirQuality(data.airQuality);  
         }
+        if (data.secondWeather) {
+          processSecondWeatherData(data.secondWeather);    
+        }
+        if (data.fcRain) {
+          processHr24Rain(data.fcRain);    
+        }
+      }  
         //if (data.riverGauge) {
         //  processRiverGauge(data.riverGauge);  
         //}
-        if (data.waterAirInfo) {
-          processRiverGauge(data.waterAirInfo);  
-        }
-      }
+        //if (data.waterAirInfo) {
+        //  processRiverGauge(data.waterAirInfo);  
+        // }
       
       if (data.iob) {
         processIOB(data.iob);    
       }
       
+      if (data.eldoraSnow) {
+        processEldoraSnow(data.eldoraSnow);    
+      }
+      
       setDate();
+      setBattery();
     }
     document.getElementById("companionStatusCircle").style.fill = "#1a75ff";
   } while (fileName);

@@ -7,7 +7,7 @@ function mySettings(props) {
         icon="https://image.ibb.co/gbWF2H/twerp_bowtie_64.png"
       />
         <TextInput
-          label="Api endpoint"
+          label="xDrip Api endpoint"
           settingsKey="endpoint"
         />
         <TextInput
@@ -27,12 +27,16 @@ function mySettings(props) {
           settingsKey="tempType"
         />
         <TextInput
-        label="Wunderground API Key"
-        settingsKey="wuAPI"
+        label="Weather API Key"
+        settingsKey="weatherAPIkey"
         />
         <TextInput
-        label="WU Station ID"
-        settingsKey="StationID"
+        label="Weather Location (Lat,Lon)"
+        settingsKey="location"
+        />
+        <TextInput
+        label="2nd Weather Location (Lat,Lon)"
+        settingsKey="secondLocation"
         />
         <TextInput
         label="AirNow API Key"
@@ -49,6 +53,10 @@ function mySettings(props) {
         <TextInput
         label="Air & Water Temp Station"
         settingsKey="WaterTempStationID"
+        />
+        <TextInput
+        label="Nightscout Site URL"
+        settingsKey="NightscoutSiteURL"
         />
     </Page>
   );
